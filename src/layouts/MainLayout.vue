@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header v-if="showHeader" elevated>
       <q-toolbar>
         <q-btn
           flat
@@ -12,30 +12,71 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          📚 Читалка
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn
+          flat
+          dense
+          round
+          icon="home"
+          aria-label="Главная"
+          @click="goHome"
+        />
       </q-toolbar>
     </q-header>
 
     <q-drawer
+      v-if="showHeader"
       v-model="leftDrawerOpen"
       show-if-above
       bordered
     >
       <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
+        <q-item-label header>
+          Читалка
         </q-item-label>
 
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
-        />
+        <q-item
+          clickable
+          @click="goHome"
+          :active="$route.path === '/'"
+        >
+          <q-item-section avatar>
+            <q-icon name="home" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Главная</q-item-label>
+            <q-item-label caption>Выбор книг</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-separator class="q-my-md" />
+
+        <q-item-label header>
+          Мои книги
+        </q-item-label>
+
+        <q-item
+          v-for="book in recentBooks"
+          :key="book.id"
+          clickable
+          @click="openBook(book)"
+        >
+          <q-item-section avatar>
+            <q-icon name="book" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>{{ book.title }}</q-item-label>
+            <q-item-label caption>{{ book.pages }} страниц</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item v-if="recentBooks.length === 0">
+          <q-item-section>
+            <q-item-label class="text-grey">Нет загруженных книг</q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
@@ -46,57 +87,52 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
-const linksList: EssentialLinkProps[] = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-];
+interface Book {
+  id: string;
+  title: string;
+  content: string;
+  pages: number;
+  size: number;
+  fileName: string;
+}
+
+const route = useRoute();
+const router = useRouter();
 
 const leftDrawerOpen = ref(false);
+const recentBooks = ref<Book[]>([]);
 
-function toggleLeftDrawer () {
+// Показываем хедер только на главной странице
+const showHeader = computed(() => {
+  return !route.path.includes('/reader/');
+});
+
+onMounted(() => {
+  loadRecentBooks();
+});
+
+function loadRecentBooks() {
+  const savedBooks = localStorage.getItem('reader-books');
+  if (savedBooks) {
+    recentBooks.value = JSON.parse(savedBooks).slice(0, 5); // Показываем только последние 5 книг
+  }
+}
+
+function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
+}
+
+function goHome() {
+  void router.push('/');
+  leftDrawerOpen.value = false;
+}
+
+function openBook(book: Book) {
+  localStorage.setItem('current-book', JSON.stringify(book));
+  void router.push(`/reader/${book.id}`);
+  leftDrawerOpen.value = false;
 }
 </script>
