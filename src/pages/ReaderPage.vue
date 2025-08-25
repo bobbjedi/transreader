@@ -34,7 +34,15 @@
 
       <!-- Индикатор страницы -->
       <div class="page-indicator">
-        {{ currentPage + 1 }} / {{ totalPages }}
+        <div class="page-nav-left" @click="prevPage">
+          <q-icon name="chevron_left" class="nav-icon" />
+        </div>
+        <div class="page-info">
+          {{ currentPage + 1 }} / {{ totalPages }}
+        </div>
+        <div class="page-nav-right" @click="nextPage">
+          <q-icon name="chevron_right" class="nav-icon" />
+        </div>
       </div>
 
       <!-- Панель настроек -->
@@ -81,20 +89,8 @@ import { ref, computed, onMounted, nextTick, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { useTextPages } from 'src/composables/useTextPages';
-// import { normalizeTextPreserveParagraphs } from 'src/composables/useTextPages';
-import { translatePhrase, translateWord } from 'src/composables/useTranslate';
 import TranslateDialog from 'src/components/TranslateDialog.vue';
 
-
-// --- ДЕБАГ ТЕСТЫ ---
-console.log('translateWord(Advisable) => ', translateWord('Advisable'));
-console.log('translateWord(advisable) => ', translateWord('advisable'));
-console.log('translateWord(ADVISABLE) => ', translateWord('ADVISABLE'));
-console.log('translateWord(Unknown) => ', translateWord('Unknown'));
-console.log('translatePhrase(Hello cat and dog!) => ', translatePhrase('Hello cat and dog!'));
-console.log('translatePhrase(HELLO CAT AND DOG!) => ', translatePhrase('HELLO CAT AND DOG!'));
-console.log('translatePhrase(Advisable behavior) => ', translatePhrase('Advisable behavior'))
-console.log('translatePhrase(Advisable Behavior) => ', translatePhrase('Advisable Behavior'));
 
 
 interface Book {
@@ -383,12 +379,71 @@ function handleTouchEnd(event: TouchEvent) {
 }
 
 .page-indicator {
-  text-align: center;
+  position: relative;
+  display: flex;
+  align-items: center;
   padding: 8px;
   background: rgba(0, 0, 0, 0.05);
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   font-size: 14px;
   color: var(--text-secondary);
+  height: 50px;
+}
+
+.page-info {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.page-nav-left,
+.page-nav-right {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.page-nav-left {
+  left: 0;
+  justify-content: flex-start;
+  padding-left: 16px;
+}
+
+.page-nav-right {
+  right: 0;
+  justify-content: flex-end;
+  padding-right: 16px;
+}
+
+.nav-icon {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.page-nav-left:hover .nav-icon,
+.page-nav-right:hover .nav-icon {
+  opacity: 1;
+}
+
+.page-nav-left:hover,
+.page-nav-right:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.page-nav-left:active,
+.page-nav-right:active {
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .settings-panel {
@@ -442,10 +497,30 @@ function handleTouchEnd(event: TouchEvent) {
   border-color: rgba(255, 255, 255, 0.1);
 }
 
+.theme-dark .page-nav-left:hover,
+.theme-dark .page-nav-right:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.theme-dark .page-nav-left:active,
+.theme-dark .page-nav-right:active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .theme-sepia .reader-header,
 .theme-sepia .page-indicator {
   background: rgba(92, 75, 55, 0.05);
   border-color: rgba(92, 75, 55, 0.1);
+}
+
+.theme-sepia .page-nav-left:hover,
+.theme-sepia .page-nav-right:hover {
+  background: rgba(92, 75, 55, 0.1);
+}
+
+.theme-sepia .page-nav-left:active,
+.theme-sepia .page-nav-right:active {
+  background: rgba(92, 75, 55, 0.2);
 }
 
 /* Улучшаем видимость кнопок переключения темы */

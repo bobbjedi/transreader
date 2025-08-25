@@ -7,39 +7,8 @@ for (const word in raw) {
   dictionary.set(word, raw[word]!);
 }
 
-export const translateWord = (word: string): string => {
-  const lower = word.toLowerCase();
-  let translation = dictionary.get(lower)?.[0];
-
-  // Если слово не найдено
-  if (!translation) {
-    let baseWord = lower;
-
-    // Простейший вариант: удаляем множественное число
-    if (lower.endsWith('ies')) {
-      baseWord = lower.slice(0, -3) + 'y';
-    } else if (lower.endsWith('es')) {
-      baseWord = lower.slice(0, -2);
-    } else if (lower.endsWith('s')) {
-      baseWord = lower.slice(0, -1);
-    }
-
-    const baseTranslation = dictionary.get(baseWord)?.[0];
-    if (baseTranslation) {
-      translation = `${baseTranslation}[мн]`;
-    } else {
-      translation = word; // ничего не нашли
-    }
-  }
-
-  // Сохраняем регистр исходного слова
-  if (word === word.toUpperCase()) {
-    return translation.toUpperCase();
-  } else if (word[0]?.toUpperCase() === word[0]) {
-    return translation[0]?.toUpperCase() + translation.slice(1);
-  } else {
-    return translation;
-  }
+const _translateWord = (word: string): string => {
+  return wordListTranslates(word)[0] || word;
 };
 
 
@@ -69,11 +38,35 @@ export const translatePhrase = (text: string) => {
   // 3. Заменяем шаблоны на переводы
   wordMap.forEach((word, index) => {
     const re = new RegExp(`{{#${index}}}`);
-    templatedText = templatedText.replace(re, translateWord(word));
+    templatedText = templatedText.replace(re, _translateWord(word));
   });
 
   return templatedText;
 };
 
 
+export const wordListTranslates = (word: string): string[] => {
+  const lower = word.toLowerCase();
+  const translations = dictionary.get(word.toLowerCase());
+  if (translations) {
+    return translations;
+  }
 
+  let baseWord = lower;
+
+  // Простейший вариант: удаляем множественное число
+  if (lower.endsWith('ies')) {
+    baseWord = lower.slice(0, -3) + 'y';
+  } else if (lower.endsWith('es')) {
+    baseWord = lower.slice(0, -2);
+  } else if (lower.endsWith('s')) {
+    baseWord = lower.slice(0, -1);
+  }
+
+  const baseTranslations = dictionary.get(baseWord);
+  if (baseTranslations) {
+    return baseTranslations;
+  }
+
+  return [word];
+}
