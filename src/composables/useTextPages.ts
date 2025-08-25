@@ -77,7 +77,6 @@ export const useTextPages = async (content: string, options: PaginateOptions): P
     // Пробуем добавить следующее предложение
     const testText = currentPageText + (currentPageText ? ' ' : '') + sentences[sentenceIndex];
     measurer.textContent = testText;
-
     const textHeight = measurer.scrollHeight;
     // console.log(`Testing sentence ${sentenceIndex}, height: ${textHeight}px, visibleHeight: ${visibleHeight}px`);
 
@@ -116,7 +115,8 @@ export const useTextPages = async (content: string, options: PaginateOptions): P
 
 export function splitByWords(text: string, wordsPerPage = 5): string[] {
   // Разделяем текст на слова (учитываем пробелы и переносы)
-  const words = text.split(/\s+/).filter(w => w.trim().length > 0);
+  text = text.replace(/\n\n/g, '\n');
+  const words = text.split(/ /).filter(w => w.length > 0);
   const pages: string[] = [];
 
   for (let i = 0; i < words.length; i += wordsPerPage) {

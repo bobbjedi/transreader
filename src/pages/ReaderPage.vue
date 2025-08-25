@@ -217,7 +217,7 @@ async function updatePages(src: string) {
   const newPages = await useTextPages(book.value.content, {
     container: contentRef.value as HTMLElement,
     measurer: document.getElementById('reader-measurer') as HTMLElement,
-    wordsPerStep: 5,
+    wordsPerStep: 3,
     onProgress: (progressValue) => {
       progress.value = Math.round(progressValue);
     }
