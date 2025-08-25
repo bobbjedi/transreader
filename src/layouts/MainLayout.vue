@@ -2,46 +2,26 @@
   <q-layout view="lHh Lpr lFf">
     <q-header v-if="showHeader" elevated>
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
+        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
           📚 Читалка
         </q-toolbar-title>
 
-        <q-btn
-          flat
-          dense
-          round
-          icon="home"
-          aria-label="Главная"
-          @click="goHome"
-        />
+        <q-btn flat dense round :icon="isUIThemeDark() ? 'light_mode' : 'dark_mode'"
+          :aria-label="isUIThemeDark() ? 'Светлая тема' : 'Темная тема'" @click="toggleUITheme" />
+
+        <q-btn flat dense round icon="home" aria-label="Главная" @click="goHome" />
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-if="showHeader"
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
+    <q-drawer v-if="showHeader" v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
         <q-item-label header>
           Читалка
         </q-item-label>
 
-        <q-item
-          clickable
-          @click="goHome"
-          :active="$route.path === '/'"
-        >
+        <q-item clickable @click="goHome" :active="$route.path === '/'">
           <q-item-section avatar>
             <q-icon name="home" />
           </q-item-section>
@@ -57,12 +37,7 @@
           Мои книги
         </q-item-label>
 
-        <q-item
-          v-for="book in recentBooks"
-          :key="book.id"
-          clickable
-          @click="openBook(book)"
-        >
+        <q-item v-for="book in recentBooks" :key="book.id" clickable @click="openBook(book)">
           <q-item-section avatar>
             <q-icon name="book" />
           </q-item-section>
@@ -89,6 +64,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useTheme } from 'src/composables/useTheme';
 
 interface Book {
   id: string;
@@ -101,6 +77,7 @@ interface Book {
 
 const route = useRoute();
 const router = useRouter();
+const { loadUITheme, toggleUITheme, isUIThemeDark } = useTheme();
 
 const leftDrawerOpen = ref(false);
 const recentBooks = ref<Book[]>([]);
@@ -112,6 +89,7 @@ const showHeader = computed(() => {
 
 onMounted(() => {
   loadRecentBooks();
+  loadUITheme();
 });
 
 function loadRecentBooks() {

@@ -15,7 +15,7 @@
         <div v-if="isLoading" class="pagination-loader">
           <q-spinner-pie size="40px" color="primary" />
           <div class="q-mt-md text-center">
-            Пересчет страниц...<br>
+            Пересчет страниц {{ progress }}%<br>
             <small>Размер шрифта: {{ settings.fontSize }}px</small>
           </div>
         </div>
@@ -43,8 +43,8 @@
 
               <div class="q-mb-md">
                 <q-item-label class="q-mb-sm">Размер шрифта: {{ settings.fontSize }}px</q-item-label>
-                <q-slider v-model="settings.fontSize" :min="12" :max="28" :step="1" @update:model-value="updatePages"
-                  color="primary" />
+                <q-slider v-model="settings.fontSize" :min="12" :max="28" :step="1"
+                  @update:model-value="updatePages('fontSize ON')" color="primary" />
               </div>
 
               <div class="q-mb-md">
@@ -80,7 +80,7 @@
 import { ref, computed, onMounted, nextTick, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
-import { splitByWords } from 'src/composables/useTextPages';
+import { useTextPages } from 'src/composables/useTextPages';
 // import { normalizeTextPreserveParagraphs } from 'src/composables/useTextPages';
 
 interface Book {
@@ -108,6 +108,7 @@ const currentPage = ref(0);
 const pages = ref<string[]>([]);
 const totalPages = ref(0);
 const isLoading = ref(false);
+const progress = ref(0);
 
 const contentRef = ref<HTMLElement>();
 
@@ -119,11 +120,11 @@ const isSwiping = ref(false);
 onMounted(() => {
   loadBook();
   loadSettings();
-  void updatePages();
+  // void updatePages('onMounted');
 });
 
 watch(() => settings.value.fontSize, () => {
-  void updatePages();
+  void updatePages('fontSize');
   saveSettings();
 });
 
@@ -184,21 +185,18 @@ function savePosition() {
   }
 }
 
-async function updatePages() {
+async function updatePages(src: string) {
+  console.log('updatePages called', src);
   if (!book.value) return;
 
   // Показываем прелоадер
   isLoading.value = true;
 
-  // Небольшая задержка чтобы прелоадер успел показаться
-  await nextTick();
-  await new Promise(resolve => setTimeout(resolve, 100));
-
   // Умная разбивка на страницы
   // const content = normalizeTextPreserveParagraphs(book.value.content);
   const content = book.value.content;
   // console.log('Normalized content:', content);
-  const newPages: string[] = [];
+  // const newPages: string[] = [];
   if (!content || content.trim().length === 0) {
     console.warn('Book content is empty!');
     pages.value = ['Нет содержимого для отображения'];
@@ -216,74 +214,14 @@ async function updatePages() {
 
   // Получаем реальные размеры контейнера
 
-  const container = contentRef.value;
-  if (!container) {
-    console.error('Container not available, using fallback pagination');
-    return;
-  }
-
-  const style = getComputedStyle(container);
-  const paddingTop = parseFloat(style.paddingTop);
-  const paddingBottom = parseFloat(style.paddingBottom);
-
-  const visibleHeight = container.clientHeight - paddingTop - paddingBottom + 10; // + 10 для зазора на лишнюю строку
-  console.log('Контентная высота без паддингов:', visibleHeight);
-
-
-  // console.log(`Container size: ${containerWidth}x${containerHeight}px`);
-
-  // Создаем временный элемент для измерения текста
-  const measurer = document.getElementById('reader-measurer') as HTMLElement;
-  measurer.style.display = 'block';
-  const prevPosition = container.style.position;
-  container.style.position = 'fixed';
-  await nextTick();
-  // document.body.appendChild(measurer);
-
-  console.log('Created text measurer');
-
-  const sentences = splitByWords(content, 5);
-  console.log(`Found ${sentences.length} words`);
-
-  let currentPageText = '';
-  let sentenceIndex = 0;
-
-  console.log('Start counting pages...');
-  while (sentenceIndex < sentences.length) {
-    // Пробуем добавить следующее предложение
-    const testText = currentPageText + (currentPageText ? ' ' : '') + sentences[sentenceIndex];
-    measurer.textContent = testText;
-
-    const textHeight = measurer.scrollHeight;
-    // console.log(`Testing sentence ${sentenceIndex}, height: ${textHeight}px, visibleHeight: ${visibleHeight}px`);
-
-    // Если текст помещается на страницу
-    if (textHeight <= visibleHeight) {
-      currentPageText = testText;
-      sentenceIndex++;
-    } else {
-      // Текст не помещается
-      if (currentPageText.length > 0) {
-        // Сохраняем текущую страницу
-        newPages.push(currentPageText.trim());
-        // console.log(`Page ${newPages.length} completed with ${currentPageText.length} chars`);
-        currentPageText = '';
-      } else {
-        // Даже одно предложение не помещается - принудительно добавляем
-        newPages.push((sentences[sentenceIndex] || '').trim());
-        // console.log(`Page ${newPages.length} - forced single sentence`);
-        sentenceIndex++;
-      }
+  const newPages = await useTextPages(book.value.content, {
+    container: contentRef.value as HTMLElement,
+    measurer: document.getElementById('reader-measurer') as HTMLElement,
+    wordsPerStep: 5,
+    onProgress: (progressValue) => {
+      progress.value = Math.round(progressValue);
     }
-  }
-  // Добавляем последнюю страницу
-  if (currentPageText.trim().length > 0) {
-    newPages.push(currentPageText.trim());
-    console.log(`Final page ${newPages.length} with ${currentPageText.length} chars`);
-  }
-
-  container.style.position = prevPosition;
-  measurer.style.display = 'none';
+  });
 
 
 
@@ -351,12 +289,8 @@ function handleTouchEnd(event: TouchEvent) {
   // Проверяем, что это горизонтальный свайп
   if (Math.abs(deltaX) > 50 && deltaY < 100) {
     if (deltaX > 0) {
-      // Свайп вправо - НАЗАД (предыдущая страница)
-      console.log('Swiping right -> previous page');
       prevPage();
     } else {
-      // Свайп влево - ВПЕРЕД (следующая страница)
-      console.log('Swiping left -> next page');
       nextPage();
     }
   }
@@ -409,6 +343,8 @@ function handleTouchEnd(event: TouchEvent) {
 }
 
 .pagination-loader {
+  width: 90%;
+  position: fixed;
   display: flex;
   flex-direction: column;
   align-items: center;

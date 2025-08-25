@@ -2,10 +2,8 @@ interface PaginateOptions {
   container: HTMLElement;  // сам контейнер
   measurer: HTMLElement;   // элемент для измерения текста
   wordsPerStep?: number;   // сколько слов добавляем за раз
+  onProgress?: (progress: number) => void; // колбэк прогресса
 }
-
-
-
 
 export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -21,66 +19,70 @@ export function normalizeTextPreserveParagraphs(text: string): string {
 
 /** Пагинация прямо в контейнере */
 export const useTextPages = async (content: string, options: PaginateOptions): Promise<string[]> => {
-  const text = normalizeTextPreserveParagraphs(content);
-
-  // Небольшая задержка чтобы прелоадер успел показаться
-  await sleep(100);
-
-  console.log('updatePages called, book content length:', text.length);
 
   // Умная разбивка на страницы
+  // const content = normalizeTextPreserveParagraphs(book.value.content);
+  // console.log('Normalized content:', content);
   const newPages: string[] = [];
-
-  if (!text || text.trim().length === 0) {
-    console.warn('Text is empty!');
-    return ['Нет содержимого для отображения'];
+  if (!content || content.trim().length === 0) {
+    return [];
   }
-
-  // РЕАЛЬНАЯ пагинация основанная на размерах экрана
-  console.log(`=== REAL PAGINATION DEBUG ===`);
-  console.log('Original content length:', text.length);
 
   // Ждем, пока DOM элементы будут готовы
   await sleep(100);
 
-  if (!options.container) {
-    console.error('Container not available, using fallback pagination');
-    return ['Нет содержимого для отображения'];
-  }
   // Получаем реальные размеры контейнера
-  const containerRect = options.container.getBoundingClientRect();
-  // const containerWidth = containerRect.width - 40; // отступы
-  const containerHeight = containerRect.height; // отступы + header
+
+  const container = options.container;
+  if (!container) {
+    console.error('Container not available, using fallback pagination');
+    return [];
+  }
+
+  const style = getComputedStyle(container);
+  const paddingTop = parseFloat(style.paddingTop);
+  const paddingBottom = parseFloat(style.paddingBottom);
+
+  const visibleHeight = container.clientHeight - paddingTop - paddingBottom + 10; // + 10 для зазора на лишнюю строку
+  console.log('Контентная высота без паддингов:', visibleHeight);
+
 
   // console.log(`Container size: ${containerWidth}x${containerHeight}px`);
 
   // Создаем временный элемент для измерения текста
-  const measurer = options.measurer;
+  const measurer = document.getElementById('reader-measurer') as HTMLElement;
   measurer.style.display = 'block';
-  const prevPosition = options.container.style.position;
-  options.container.style.position = 'fixed';
+  measurer.style.visibility = 'hidden';
+  const prevPosition = container.style.position;
+  container.style.position = 'fixed';
   await sleep(100);
   // document.body.appendChild(measurer);
 
-  console.log('Created measurer');
+  // console.log('Created text measurer');
 
-  // Разбиваем на предложения для точной пагинации
-  const sentences = text.split(/(?<=[.!?])\s+/).filter(s => s.trim().length > 0);
-  console.log(`Found ${sentences.length} sentences`);
+  const sentences = splitByWords(content, options.wordsPerStep || 5);
+  // console.log(`Found ${sentences.length} words`);
 
   let currentPageText = '';
   let sentenceIndex = 0;
 
+  console.log('Start counting pages...');
   while (sentenceIndex < sentences.length) {
+    if (sentenceIndex % 5000 === 0) {
+      const progress = (sentenceIndex / sentences.length) * 100;
+      options.onProgress?.(progress);
+      await sleep(1);
+    }
+
     // Пробуем добавить следующее предложение
     const testText = currentPageText + (currentPageText ? ' ' : '') + sentences[sentenceIndex];
     measurer.textContent = testText;
 
     const textHeight = measurer.scrollHeight;
-    console.log(`Testing sentence ${sentenceIndex}, height: ${textHeight}px, containerHeight: ${containerHeight}px`);
+    // console.log(`Testing sentence ${sentenceIndex}, height: ${textHeight}px, visibleHeight: ${visibleHeight}px`);
 
     // Если текст помещается на страницу
-    if (textHeight <= containerHeight) {
+    if (textHeight <= visibleHeight) {
       currentPageText = testText;
       sentenceIndex++;
     } else {
@@ -88,29 +90,25 @@ export const useTextPages = async (content: string, options: PaginateOptions): P
       if (currentPageText.length > 0) {
         // Сохраняем текущую страницу
         newPages.push(currentPageText.trim());
-        console.log(`Page ${newPages.length} completed with ${currentPageText.length} chars`);
+        // console.log(`Page ${newPages.length} completed with ${currentPageText.length} chars`);
         currentPageText = '';
       } else {
         // Даже одно предложение не помещается - принудительно добавляем
         newPages.push((sentences[sentenceIndex] || '').trim());
-        console.log(`Page ${newPages.length} - forced single sentence`);
+        // console.log(`Page ${newPages.length} - forced single sentence`);
         sentenceIndex++;
       }
     }
-
-
-    // Добавляем последнюю страницу
-    if (currentPageText.trim().length > 0) {
-      newPages.push(currentPageText.trim());
-      console.log(`Final page ${newPages.length} with ${currentPageText.length} chars`);
-    }
-
-    options.container.style.position = prevPosition;
-    measurer.style.display = 'none';
-
-    await sleep(100);
   }
-  console.log('New pages:', newPages);
+  // Добавляем последнюю страницу
+  if (currentPageText.trim().length > 0) {
+    newPages.push(currentPageText.trim());
+    console.log(`Final page ${newPages.length} with ${currentPageText.length} chars`);
+  }
+
+  container.style.position = prevPosition;
+  measurer.style.display = 'none';
+
   return newPages;
 }
 
