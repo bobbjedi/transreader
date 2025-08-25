@@ -1,31 +1,12 @@
 <template>
   <q-page class="reader-page" :class="themeClass">
-    <div
-      v-if="book"
-      class="reader-container"
-      @touchstart="handleTouchStart"
-      @touchmove="handleTouchMove"
-      @touchend="handleTouchEnd"
-    >
+    <div v-if="book" class="reader-container" @touchstart="handleTouchStart" @touchmove="handleTouchMove"
+      @touchend="handleTouchEnd">
       <!-- Заголовок с навигацией -->
       <div class="reader-header">
-        <q-btn
-          flat
-          round
-          dense
-          icon="arrow_back"
-          @click="goBack"
-          class="header-btn"
-        />
+        <q-btn flat round dense icon="arrow_back" @click="goBack" class="header-btn" />
         <div class="book-title">{{ book.title }}</div>
-        <q-btn
-          flat
-          round
-          dense
-          icon="settings"
-          @click="showSettings = !showSettings"
-          class="header-btn"
-        />
+        <q-btn flat round dense icon="settings" @click="showSettings = !showSettings" class="header-btn" />
       </div>
 
       <!-- Контент страницы -->
@@ -40,12 +21,11 @@
         </div>
 
         <!-- Содержимое страницы -->
-        <div
-          v-else
-          class="page-content"
-          :style="{ fontSize: settings.fontSize + 'px' }"
-        >
+        <div v-if="!isLoading" class="page-content" id="main-reader-content"
+          :style="{ fontSize: settings.fontSize + 'px' }">
           {{ currentPageContent }}
+        </div>
+        <div class="page-content" id="reader-measurer" :style="{ fontSize: settings.fontSize + 'px' }">
         </div>
       </div>
 
@@ -63,42 +43,22 @@
 
               <div class="q-mb-md">
                 <q-item-label class="q-mb-sm">Размер шрифта: {{ settings.fontSize }}px</q-item-label>
-                <q-slider
-                  v-model="settings.fontSize"
-                  :min="12"
-                  :max="28"
-                  :step="1"
-                  @update:model-value="updatePages"
-                  color="primary"
-                />
+                <q-slider v-model="settings.fontSize" :min="12" :max="28" :step="1" @update:model-value="updatePages"
+                  color="primary" />
               </div>
 
               <div class="q-mb-md">
                 <q-item-label class="q-mb-sm">Тема</q-item-label>
-                <q-btn-toggle
-                  v-model="settings.theme"
-                  :options="[
-                    { label: 'Светлая', value: 'light' },
-                    { label: 'Темная', value: 'dark' },
-                    { label: 'Сепия', value: 'sepia' }
-                  ]"
-                  @update:model-value="saveSettings"
-                  color="primary"
-                  text-color="primary"
-                  toggle-color="primary"
-                  unelevated
-                  spread
-                />
+                <q-btn-toggle v-model="settings.theme" :options="[
+                  { label: 'Светлая', value: 'light' },
+                  { label: 'Темная', value: 'dark' },
+                  { label: 'Сепия', value: 'sepia' }
+                ]" @update:model-value="saveSettings" color="primary" text-color="primary" toggle-color="primary"
+                  unelevated spread />
               </div>
 
               <div class="row q-gutter-sm">
-                <q-btn
-                  label="Закрыть"
-                  @click="showSettings = false"
-                  color="primary"
-                  flat
-                  class="col"
-                />
+                <q-btn label="Закрыть" @click="showSettings = false" color="primary" flat class="col" />
               </div>
             </q-card-section>
           </q-card>
@@ -120,6 +80,7 @@
 import { ref, computed, onMounted, nextTick, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
+import { normalizeTextPreserveParagraphs } from 'src/composables/useTextPages';
 
 interface Book {
   id: string;
@@ -235,7 +196,7 @@ async function updatePages() {
   console.log('updatePages called, book content length:', book.value.content.length);
 
   // Умная разбивка на страницы
-  const content = book.value.content;
+  const content = normalizeTextPreserveParagraphs(book.value.content);
   const newPages: string[] = [];
 
   if (!content || content.trim().length === 0) {
@@ -253,80 +214,81 @@ async function updatePages() {
   // Ждем, пока DOM элементы будут готовы
   await nextTick();
 
-  if (!contentRef.value) {
-    console.warn('Content ref not available, using fallback pagination');
-    // Fallback - простая разбивка
-    const fallbackCharsPerPage = Math.floor(800 * (16 / settings.value.fontSize));
-    for (let i = 0; i < content.length; i += fallbackCharsPerPage) {
-      const pageText = content.substring(i, i + fallbackCharsPerPage);
-      newPages.push(pageText.trim());
-    }
-  } else {
-    // Получаем реальные размеры контейнера
-    const containerRect = contentRef.value.getBoundingClientRect();
-    const containerWidth = containerRect.width - 40; // отступы
-    const containerHeight = containerRect.height - 120; // отступы + header
+  // Получаем реальные размеры контейнера
 
-    console.log(`Container size: ${containerWidth}x${containerHeight}px`);
+  const container = contentRef.value;
+  if (!container) {
+    console.error('Container not available, using fallback pagination');
+    return;
+  }
 
-    // Создаем временный элемент для измерения текста
-    const measurer = document.createElement('div');
-    measurer.style.position = 'absolute';
-    measurer.style.visibility = 'hidden';
-    measurer.style.width = containerWidth + 'px';
-    measurer.style.fontSize = settings.value.fontSize + 'px';
-    measurer.style.lineHeight = '1.6';
-    measurer.style.fontFamily = 'inherit';
-    measurer.style.whiteSpace = 'pre-wrap';
-    measurer.style.wordBreak = 'break-word';
-    document.body.appendChild(measurer);
+  const style = getComputedStyle(container);
+  const paddingTop = parseFloat(style.paddingTop);
+  const paddingBottom = parseFloat(style.paddingBottom);
 
-    console.log('Created text measurer');
+  const visibleHeight = container.clientHeight - paddingTop - paddingBottom;
+  console.log('Контентная высота без паддингов:', visibleHeight);
 
-    // Разбиваем на предложения для точной пагинации
-    const sentences = content.split(/(?<=[.!?])\s+/).filter(s => s.trim().length > 0);
-    console.log(`Found ${sentences.length} sentences`);
 
-    let currentPageText = '';
-    let sentenceIndex = 0;
+  // console.log(`Container size: ${containerWidth}x${containerHeight}px`);
 
-    while (sentenceIndex < sentences.length) {
-      // Пробуем добавить следующее предложение
-      const testText = currentPageText + (currentPageText ? ' ' : '') + sentences[sentenceIndex];
-      measurer.textContent = testText;
+  // Создаем временный элемент для измерения текста
+  const measurer = document.getElementById('reader-measurer') as HTMLElement;
+  measurer.style.display = 'block';
+  const prevPosition = container.style.position;
+  container.style.position = 'fixed';
+  await nextTick();
+  // document.body.appendChild(measurer);
 
-      const textHeight = measurer.scrollHeight;
-      console.log(`Testing sentence ${sentenceIndex}, height: ${textHeight}px`);
+  console.log('Created text measurer');
 
-      // Если текст помещается на страницу
-      if (textHeight <= containerHeight) {
-        currentPageText = testText;
-        sentenceIndex++;
+  // Разбиваем на предложения для точной пагинации
+  const sentences = content.split(/(?<=[.!?])\s+/).filter(s => s.trim().length > 0);
+
+  console.log(`Found ${sentences.length} sentences`);
+
+  let currentPageText = '';
+  let sentenceIndex = 0;
+
+  while (sentenceIndex < sentences.length) {
+    // Пробуем добавить следующее предложение
+    const testText = currentPageText + (currentPageText ? ' ' : '') + sentences[sentenceIndex];
+    measurer.textContent = testText;
+
+    const textHeight = measurer.scrollHeight;
+    console.log(`Testing sentence ${sentenceIndex}, height: ${textHeight}px, visibleHeight: ${visibleHeight}px`);
+
+    // Если текст помещается на страницу
+    if (textHeight <= visibleHeight) {
+      currentPageText = testText;
+      sentenceIndex++;
+    } else {
+      // Текст не помещается
+      if (currentPageText.length > 0) {
+        // Сохраняем текущую страницу
+        newPages.push(currentPageText.trim());
+        console.log(`Page ${newPages.length} completed with ${currentPageText.length} chars`);
+        currentPageText = '';
       } else {
-        // Текст не помещается
-        if (currentPageText.length > 0) {
-          // Сохраняем текущую страницу
-          newPages.push(currentPageText.trim());
-          console.log(`Page ${newPages.length} completed with ${currentPageText.length} chars`);
-          currentPageText = '';
-        } else {
-          // Даже одно предложение не помещается - принудительно добавляем
-          newPages.push((sentences[sentenceIndex] || '').trim());
-          console.log(`Page ${newPages.length} - forced single sentence`);
-          sentenceIndex++;
-        }
+        // Даже одно предложение не помещается - принудительно добавляем
+        newPages.push((sentences[sentenceIndex] || '').trim());
+        console.log(`Page ${newPages.length} - forced single sentence`);
+        sentenceIndex++;
       }
     }
-
-    // Добавляем последнюю страницу
-    if (currentPageText.trim().length > 0) {
-      newPages.push(currentPageText.trim());
-      console.log(`Final page ${newPages.length} with ${currentPageText.length} chars`);
-    }
-
-    // Убираем временный элемент
-    document.body.removeChild(measurer);
   }
+
+  // Добавляем последнюю страницу
+  if (currentPageText.trim().length > 0) {
+    newPages.push(currentPageText.trim());
+    console.log(`Final page ${newPages.length} with ${currentPageText.length} chars`);
+  }
+
+  container.style.position = prevPosition;
+  measurer.style.display = 'none';
+  // Убираем временный элемент
+  // document.body.removeChild(measurer);
+
 
   pages.value = newPages;
   totalPages.value = newPages.length;
