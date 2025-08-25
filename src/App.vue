@@ -18,7 +18,7 @@ document.addEventListener('click', (event) => {
         <div><i>${wordListTranslates(target.textContent!).join(' | ')}</i></div>
         `,
         position: 'top',
-        timeout: 5000,
+        timeout: 2000,
         color: 'primary',
         textColor: 'white',
         actions: [

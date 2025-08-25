@@ -45,7 +45,7 @@
       <!-- Настройки -->
       <q-card class="q-pa-md">
         <q-card-section>
-          <div class="text-h6 q-mb-md">Настройки</div>
+          <div class="text-h6 q-mb-md">Настройки по дефолту</div>
 
           <div class="q-mb-md">
             <q-item-label class="q-mb-sm">Размер шрифта: {{ fontSize }}px</q-item-label>
@@ -58,7 +58,7 @@
               { label: 'Светлая', value: 'light' },
               { label: 'Темная', value: 'dark' },
               { label: 'Сепия', value: 'sepia' }
-            ]" color="primary" text-color="primary" toggle-color="primary" unelevated spread />
+            ]" color="primary" toggle-color="accent" unelevated spread />
           </div>
         </q-card-section>
       </q-card>
@@ -285,3 +285,26 @@ async function handleDeleteBook(bookId: string) {
   }
 }
 </script>
+
+<style scoped>
+/* Улучшаем видимость кнопок переключения темы */
+.q-btn-toggle .q-btn {
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  color: #333 !important;
+}
+
+.q-btn-toggle .q-btn--active {
+  background: var(--q-accent) !important;
+  color: white !important;
+  border-color: var(--q-accent) !important;
+}
+
+.q-btn-toggle .q-btn:hover {
+  background: rgba(255, 255, 255, 0.9) !important;
+}
+
+.q-btn-toggle .q-btn--active:hover {
+  background: var(--q-accent) !important;
+}
+</style>

@@ -127,6 +127,7 @@ const isSwiping = ref(false);
 onMounted(() => {
   loadBook();
   loadSettings();
+  void updatePages('onMounted');
 });
 
 watch(() => settings.value.fontSize, () => {
@@ -200,7 +201,7 @@ function savePosition() {
 }
 
 async function updatePages(src: string) {
-  console.log('updatePages called', src);
+  console.log('>>>>>>>>>>>updatePages called', src);
   if (!book.value) return;
 
   // Показываем прелоадер
