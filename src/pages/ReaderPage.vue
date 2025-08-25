@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { useTextPages } from 'src/composables/useTextPages';
@@ -119,6 +119,26 @@ const isSwiping = ref(false);
 onMounted(() => {
   loadBook();
   void updatePages('onMounted');
+
+  // Исправляем высоту viewport для мобильных браузеров
+  setViewportHeight();
+  window.addEventListener('resize', setViewportHeight);
+  window.addEventListener('orientationchange', setViewportHeight);
+});
+
+// Функция для установки правильной высоты viewport
+function setViewportHeight() {
+  // Проверяем поддержку dvh
+  if (!CSS.supports('height', '100dvh')) {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  }
+}
+
+// Очищаем обработчики событий при размонтировании
+onUnmounted(() => {
+  window.removeEventListener('resize', setViewportHeight);
+  window.removeEventListener('orientationchange', setViewportHeight);
 });
 
 
@@ -310,7 +330,23 @@ function handleTouchEnd(event: TouchEvent) {
 <style scoped>
 .reader-page {
   height: 100vh;
+  height: 100dvh;
+  /* Новый CSS стандарт для динамической высоты viewport */
   overflow: hidden;
+}
+
+/* Фоллбек для браузеров без поддержки dvh */
+@supports not (height: 100dvh) {
+  .reader-page {
+    height: calc(var(--vh, 1vh) * 100);
+  }
+}
+
+/* Фоллбек для браузеров без поддержки dvh */
+@supports not (height: 100dvh) {
+  .reader-page {
+    height: calc(var(--vh, 1vh) * 100);
+  }
 }
 
 .reader-container {
@@ -475,6 +511,14 @@ function handleTouchEnd(event: TouchEvent) {
 
 .full-height {
   height: 100vh;
+  height: 100dvh;
+}
+
+/* Фоллбек для браузеров без поддержки dvh */
+@supports not (height: 100dvh) {
+  .full-height {
+    height: calc(var(--vh, 1vh) * 100);
+  }
 }
 
 /* Темы */
