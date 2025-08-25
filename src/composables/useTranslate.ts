@@ -70,3 +70,10 @@ export const wordListTranslates = (word: string): string[] => {
 
   return [word];
 }
+
+
+export const wrapContentToWords = (content: string) => {
+  return content.replace(/\b[a-zA-Z]+(?:'[a-zA-Z]+)?\b/g, (word) => {
+    return `<span class="clickable-word" data-word="${word}">${word}</span>`;
+  });
+}

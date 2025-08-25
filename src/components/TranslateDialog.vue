@@ -23,7 +23,7 @@
           <div v-else class="sentences-container">
             <div v-for="(sentence, index) in sentences" :key="index" class="sentence-pair">
               <div class="text-section">
-                <div class="text-original">{{ sentence.original }}</div>
+                <div class="text-original" v-html="wrapContentToWords(sentence.original)"></div>
               </div>
 
               <div class="text-section">
@@ -36,13 +36,8 @@
         </q-card-section>
 
         <q-card-actions class="translate-actions">
-          <q-btn 
-            label="Закрыть" 
-            color="primary" 
-            unelevated
-            @click="showDialog = false" 
-            class="full-width close-action-btn" 
-          />
+          <q-btn label="Закрыть" color="primary" unelevated @click="showDialog = false"
+            class="full-width close-action-btn" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -51,7 +46,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { translatePhrase } from 'src/composables/useTranslate';
+import { translatePhrase, wrapContentToWords } from 'src/composables/useTranslate';
 
 interface Props {
   pageText: string;

@@ -22,8 +22,7 @@
 
         <!-- Содержимое страницы -->
         <div v-if="!isLoading" class="page-content" id="main-reader-content"
-          :style="{ fontSize: settings.fontSize + 'px' }">
-          {{ currentPageContent }}
+          :style="{ fontSize: settings.fontSize + 'px' }" v-html="wrappedPageContent">
         </div>
         <div class="page-content" id="reader-measurer" :style="{ fontSize: settings.fontSize + 'px' }">
         </div>
@@ -90,8 +89,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { useTextPages } from 'src/composables/useTextPages';
 import TranslateDialog from 'src/components/TranslateDialog.vue';
-
-
+import { wrapContentToWords } from 'src/composables/useTranslate';
 
 interface Book {
   id: string;
@@ -121,7 +119,6 @@ const isLoading = ref(false);
 const progress = ref(0);
 
 const contentRef = ref<HTMLElement>();
-
 // Touch handling
 const touchStartX = ref(0);
 const touchStartY = ref(0);
@@ -130,7 +127,6 @@ const isSwiping = ref(false);
 onMounted(() => {
   loadBook();
   loadSettings();
-  // void updatePages('onMounted');
 });
 
 watch(() => settings.value.fontSize, () => {
@@ -147,7 +143,15 @@ const themeClass = computed(() => {
 });
 
 const currentPageContent = computed(() => {
-  return pages.value[currentPage.value] || '';
+  return (pages.value[currentPage.value] || '').replace(/[’‘`]/g, "'")
+});
+
+const wrappedPageContent = computed(() => {
+  const content = currentPageContent.value;
+  if (!content) return '';
+
+  // Разбиваем текст на слова и обрамляем каждое слово в span
+  return wrapContentToWords(content);
 });
 
 function loadBook() {
@@ -376,6 +380,25 @@ function handleTouchEnd(event: TouchEvent) {
   word-break: break-word;
   height: 100%;
   overflow: hidden;
+}
+
+.clickable-word {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  padding: 1px 2px;
+  border-radius: 3px;
+}
+
+.clickable-word:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+  text-decoration: underline;
+}
+
+.clickable-word-clicked {
+  font-weight: bold !important;
+  color: red !important;
+  background-color: rgba(0, 123, 255, 0.1) !important;
+  text-decoration: underline !important;
 }
 
 .page-indicator {
