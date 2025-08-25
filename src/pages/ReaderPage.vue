@@ -82,6 +82,19 @@ import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { useTextPages } from 'src/composables/useTextPages';
 // import { normalizeTextPreserveParagraphs } from 'src/composables/useTextPages';
+import { translatePhrase, translateWord } from 'src/composables/useTranslate';
+
+
+// --- ДЕБАГ ТЕСТЫ ---
+console.log('translateWord(Advisable) => ', translateWord('Advisable'));
+console.log('translateWord(advisable) => ', translateWord('advisable'));
+console.log('translateWord(ADVISABLE) => ', translateWord('ADVISABLE'));
+console.log('translateWord(Unknown) => ', translateWord('Unknown'));
+console.log('translatePhrase(Hello cat and dog!) => ', translatePhrase('Hello cat and dog!'));
+console.log('translatePhrase(HELLO CAT AND DOG!) => ', translatePhrase('HELLO CAT AND DOG!'));
+console.log('translatePhrase(Advisable behavior) => ', translatePhrase('Advisable behavior'))
+console.log('translatePhrase(Advisable Behavior) => ', translatePhrase('Advisable Behavior'));
+
 
 interface Book {
   id: string;
