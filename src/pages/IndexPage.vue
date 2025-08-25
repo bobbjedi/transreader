@@ -9,14 +9,8 @@
       <q-card class="q-pa-md">
         <q-card-section>
           <div class="text-h6 q-mb-md">Выберите книгу</div>
-          <q-file
-            v-model="selectedFile"
-            label="Выберите файл (FB2, TXT)"
-            accept=".fb2,.txt"
-            filled
-            :loading="isLoading"
-            @update:model-value="handleFileSelect"
-          >
+          <q-file v-model="selectedFile" label="Выберите файл (FB2, TXT)" accept=".fb2,.txt" filled :loading="isLoading"
+            @update:model-value="handleFileSelect">
             <template v-slot:prepend>
               <q-icon name="attach_file" />
             </template>
@@ -29,13 +23,7 @@
         <q-card-section>
           <div class="text-h6 q-mb-md">Мои книги</div>
           <q-list separator>
-            <q-item
-              v-for="book in books"
-              :key="book.id"
-              clickable
-              @click="openBook(book)"
-              class="q-py-sm"
-            >
+            <q-item v-for="book in books" :key="book.id" clickable @click="openBook(book)" class="q-py-sm">
               <q-item-section>
                 <q-item-label>{{ book.title }}</q-item-label>
                 <q-item-label caption>
@@ -43,6 +31,10 @@
                 </q-item-label>
               </q-item-section>
               <q-item-section side>
+                <q-btn flat round dense icon="delete" color="negative" @click.stop="handleDeleteBook(book.id)"
+                  class="q-mr-sm">
+                  <q-tooltip>Удалить книгу</q-tooltip>
+                </q-btn>
                 <q-icon name="chevron_right" />
               </q-item-section>
             </q-item>
@@ -57,31 +49,16 @@
 
           <div class="q-mb-md">
             <q-item-label class="q-mb-sm">Размер шрифта: {{ fontSize }}px</q-item-label>
-            <q-slider
-              v-model="fontSize"
-              :min="12"
-              :max="24"
-              :step="1"
-              label
-              color="primary"
-            />
+            <q-slider v-model="fontSize" :min="12" :max="24" :step="1" label color="primary" />
           </div>
 
           <div class="q-mb-md">
             <q-item-label class="q-mb-sm">Тема</q-item-label>
-            <q-btn-toggle
-              v-model="theme"
-              :options="[
-                { label: 'Светлая', value: 'light' },
-                { label: 'Темная', value: 'dark' },
-                { label: 'Сепия', value: 'sepia' }
-              ]"
-              color="primary"
-              text-color="primary"
-              toggle-color="primary"
-              unelevated
-              spread
-            />
+            <q-btn-toggle v-model="theme" :options="[
+              { label: 'Светлая', value: 'light' },
+              { label: 'Темная', value: 'dark' },
+              { label: 'Сепия', value: 'sepia' }
+            ]" color="primary" text-color="primary" toggle-color="primary" unelevated spread />
           </div>
         </q-card-section>
       </q-card>
@@ -93,18 +70,11 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
-
-interface Book {
-  id: string;
-  title: string;
-  content: string;
-  pages: number;
-  size: number;
-  fileName: string;
-}
+import { useBookManager, type Book } from 'src/composables/useBookManager';
 
 const router = useRouter();
 const $q = useQuasar();
+const { getAllBooks, deleteBookById, addBook } = useBookManager();
 
 const selectedFile = ref<File | null>(null);
 const isLoading = ref(false);
@@ -131,14 +101,7 @@ function saveSettings() {
 }
 
 function loadBooks() {
-  const savedBooks = localStorage.getItem('reader-books');
-  if (savedBooks) {
-    books.value = JSON.parse(savedBooks);
-  }
-}
-
-function saveBooks() {
-  localStorage.setItem('reader-books', JSON.stringify(books.value));
+  books.value = getAllBooks();
 }
 
 async function handleFileSelect(file: File | null) {
@@ -150,8 +113,8 @@ async function handleFileSelect(file: File | null) {
     const content = await readFile(file);
     const parsedBook = parseBook(file, content);
 
-    books.value.push(parsedBook);
-    saveBooks();
+    addBook(parsedBook);
+    books.value = getAllBooks();
 
     $q.notify({
       type: 'positive',
@@ -199,7 +162,7 @@ function parseBook(file: File, content: string): Book {
     if (parseError) {
       console.warn('FB2 parsing error, treating as plain text');
       cleanContent = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
-        } else {
+    } else {
       // Отладочная информация о структуре документа
       console.log('FB2 Document structure:');
       console.log('Root element:', doc.documentElement.tagName);
@@ -207,13 +170,13 @@ function parseBook(file: File, content: string): Book {
 
       // Извлекаем заголовок
       const titleElement = doc.querySelector('book-title') ||
-                          doc.querySelector('title-info book-title') ||
-                          doc.querySelector('title');
+        doc.querySelector('title-info book-title') ||
+        doc.querySelector('title');
       if (titleElement) {
         title = titleElement.textContent?.trim() || title;
       }
 
-            // Извлекаем текст из различных возможных структур FB2
+      // Извлекаем текст из различных возможных структур FB2
       let paragraphs: Element[] = [];
 
       // Пробуем различные селекторы для извлечения текста
@@ -312,5 +275,13 @@ function openBook(book: Book) {
     theme: theme.value
   }));
   void router.push(`/reader/${book.id}`);
+}
+
+async function handleDeleteBook(bookId: string) {
+  const success = await deleteBookById(bookId);
+  if (success) {
+    // Обновляем список книг после удаления
+    books.value = getAllBooks();
+  }
 }
 </script>

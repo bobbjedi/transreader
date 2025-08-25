@@ -56,8 +56,7 @@
                   { label: 'Светлая', value: 'light' },
                   { label: 'Темная', value: 'dark' },
                   { label: 'Сепия', value: 'sepia' }
-                ]" @update:model-value="saveSettings" color="primary" text-color="primary" toggle-color="primary"
-                  unelevated spread />
+                ]" @update:model-value="saveSettings" color="primary" toggle-color="accent" unelevated spread />
               </div>
 
               <div class="row q-gutter-sm">
@@ -447,5 +446,42 @@ function handleTouchEnd(event: TouchEvent) {
 .theme-sepia .page-indicator {
   background: rgba(92, 75, 55, 0.05);
   border-color: rgba(92, 75, 55, 0.1);
+}
+
+/* Улучшаем видимость кнопок переключения темы */
+.settings-card .q-btn-toggle .q-btn {
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  color: #333 !important;
+}
+
+.settings-card .q-btn-toggle .q-btn--active {
+  background: var(--q-accent) !important;
+  color: white !important;
+  border-color: var(--q-accent) !important;
+}
+
+/* Дополнительные стили для темной темы */
+.theme-dark .settings-card .q-btn-toggle .q-btn {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #e0e0e0 !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.theme-dark .settings-card .q-btn-toggle .q-btn--active {
+  background: var(--q-accent) !important;
+  color: white !important;
+}
+
+/* Стили для темы сепия */
+.theme-sepia .settings-card .q-btn-toggle .q-btn {
+  background: rgba(92, 75, 55, 0.1) !important;
+  color: #5c4b37 !important;
+  border-color: rgba(92, 75, 55, 0.3) !important;
+}
+
+.theme-sepia .settings-card .q-btn-toggle .q-btn--active {
+  background: var(--q-accent) !important;
+  color: white !important;
 }
 </style>

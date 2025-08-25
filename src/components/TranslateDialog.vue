@@ -1,8 +1,8 @@
 <template>
   <div class="translate-dialog-container">
     <!-- Прозрачная кнопка вверху справа -->
-    <q-btn flat round dense icon="translate" :label="'Перевод ' + showDialog" class="translate-btn"
-      @click="showDialog = true" :style="{ opacity: 0.3 }" />
+    <q-btn flat round dense icon="translate" class="translate-btn" @click="showDialog = true"
+      :style="{ opacity: 0.3 }" />
 
 
     <!-- Maximize диалог -->
@@ -36,7 +36,13 @@
         </q-card-section>
 
         <q-card-actions class="translate-actions">
-          <q-btn label="Закрыть" color="primary" @click="showDialog = false" class="full-width" />
+          <q-btn 
+            label="Закрыть" 
+            color="primary" 
+            unelevated
+            @click="showDialog = false" 
+            class="full-width close-action-btn" 
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
