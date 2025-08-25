@@ -1,4 +1,5 @@
 import { useQuasar } from 'quasar';
+import { usePageCache } from './usePageCache';
 
 export interface Book {
   id: string;
@@ -11,6 +12,7 @@ export interface Book {
 
 export function useBookManager() {
   const $q = useQuasar();
+  const { clearBookCache } = usePageCache();
 
   /**
    * Получить все книги из localStorage
@@ -59,6 +61,9 @@ export function useBookManager() {
         // Удаляем книгу из списка
         const updatedBooks = books.filter(book => book.id !== id);
         saveBooks(updatedBooks);
+
+        // Очищаем кеш страниц для удаляемой книги
+        clearBookCache(id);
 
         // Очищаем current-book если удаляется активная книга
         const currentBook = localStorage.getItem('current-book');

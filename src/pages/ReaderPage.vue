@@ -11,20 +11,12 @@
 
       <!-- Контент страницы -->
       <div class="reader-content" ref="contentRef">
-        <!-- Прелоадер пагинации -->
-        <div v-if="isLoading" class="pagination-loader">
-          <q-spinner-pie size="40px" color="primary" />
-          <div class="q-mt-md text-center">
-            Пересчет страниц {{ progress }}%<br>
-            <small>Размер шрифта: {{ settings.fontSize }}px</small>
-          </div>
-        </div>
 
         <!-- Содержимое страницы -->
-        <div v-if="!isLoading" class="page-content" id="main-reader-content"
-          :style="{ fontSize: settings.fontSize + 'px' }" v-html="wrappedPageContent">
+        <div v-if="!isLoading" class="page-content" id="main-reader-content" :style="{ fontSize: fontSize + 'px' }"
+          v-html="wrappedPageContent">
         </div>
-        <div class="page-content" id="reader-measurer" :style="{ fontSize: settings.fontSize + 'px' }">
+        <div class="page-content" id="reader-measurer" :style="{ fontSize: fontSize + 'px' }">
         </div>
       </div>
 
@@ -45,34 +37,20 @@
       </div>
 
       <!-- Панель настроек -->
-      <q-slide-transition>
-        <div v-show="showSettings" class="settings-panel">
-          <q-card class="settings-card">
-            <q-card-section class="q-pb-none">
-              <div class="text-subtitle1 q-mb-md">Настройки чтения</div>
+      <ReaderSettings :show="showSettings" @close="showSettings = false"
+        @font-size-changed="void updatePages('fontSize changed')" />
+    </div>
 
-              <div class="q-mb-md">
-                <q-item-label class="q-mb-sm">Размер шрифта: {{ settings.fontSize }}px</q-item-label>
-                <q-slider v-model="settings.fontSize" :min="12" :max="28" :step="1"
-                  @update:model-value="updatePages('fontSize ON')" color="primary" />
-              </div>
-
-              <div class="q-mb-md">
-                <q-item-label class="q-mb-sm">Тема</q-item-label>
-                <q-btn-toggle v-model="settings.theme" :options="[
-                  { label: 'Светлая', value: 'light' },
-                  { label: 'Темная', value: 'dark' },
-                  { label: 'Сепия', value: 'sepia' }
-                ]" @update:model-value="saveSettings" color="primary" toggle-color="accent" unelevated spread />
-              </div>
-
-              <div class="row q-gutter-sm">
-                <q-btn label="Закрыть" @click="showSettings = false" color="primary" flat class="col" />
-              </div>
-            </q-card-section>
-          </q-card>
+    <!-- Полноэкранный прелоадер пересчета страниц -->
+    <div v-if="isLoading" class="fullscreen-loader">
+      <div class="loader-content">
+        <q-spinner-pie size="60px" color="primary" />
+        <div class="q-mt-lg text-center">
+          <div class="text-h6">Пересчет страниц</div>
+          <div class="text-subtitle1 q-mt-sm">{{ progress }}%</div>
+          <div class="text-caption q-mt-xs">Размер шрифта: {{ fontSize }}px</div>
         </div>
-      </q-slide-transition>
+      </div>
     </div>
 
     <!-- Загрузка -->
@@ -88,8 +66,20 @@ import { ref, computed, onMounted, nextTick, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { useTextPages } from 'src/composables/useTextPages';
+import { usePageCache } from 'src/composables/usePageCache';
 import TranslateDialog from 'src/components/TranslateDialog.vue';
+import ReaderSettings from 'src/components/ReaderSettings.vue';
 import { wrapContentToWords } from 'src/composables/useTranslate';
+import { fontSize, theme } from 'src/composables/useReaderSettings';
+
+
+watch(() => fontSize.value, () => {
+  // При изменении размера шрифта очищаем старые кеши для текущей книги
+  if (book.value) {
+    clearBookCache(book.value.id);
+  }
+  void updatePages('fontSize changed');
+});
 
 interface Book {
   id: string;
@@ -100,23 +90,22 @@ interface Book {
   fileName: string;
 }
 
-interface Settings {
-  fontSize: number;
-  theme: string;
-}
+
 
 const route = useRoute();
 const router = useRouter();
 const $q = useQuasar();
+const { savePagesToCache, loadPagesFromCache, clearBookCache } = usePageCache();
 
 const book = ref<Book | null>(null);
-const settings = ref<Settings>({ fontSize: 16, theme: 'light' });
+
 const showSettings = ref(false);
 const currentPage = ref(0);
 const pages = ref<string[]>([]);
 const totalPages = ref(0);
 const isLoading = ref(false);
 const progress = ref(0);
+
 
 const contentRef = ref<HTMLElement>();
 // Touch handling
@@ -126,21 +115,14 @@ const isSwiping = ref(false);
 
 onMounted(() => {
   loadBook();
-  loadSettings();
   void updatePages('onMounted');
 });
 
-watch(() => settings.value.fontSize, () => {
-  void updatePages('fontSize');
-  saveSettings();
-});
 
-watch(() => settings.value.theme, () => {
-  saveSettings();
-});
+
 
 const themeClass = computed(() => {
-  return `theme-${settings.value.theme}`;
+  return `theme-${theme.value}`;
 });
 
 const currentPageContent = computed(() => {
@@ -183,16 +165,8 @@ function loadBook() {
   }
 }
 
-function loadSettings() {
-  const savedSettings = localStorage.getItem('reader-settings');
-  if (savedSettings) {
-    settings.value = { ...settings.value, ...JSON.parse(savedSettings) };
-  }
-}
 
-function saveSettings() {
-  localStorage.setItem('reader-settings', JSON.stringify(settings.value));
-}
+
 
 function savePosition() {
   if (book.value?.id) {
@@ -203,25 +177,39 @@ function savePosition() {
 async function updatePages(src: string) {
   console.log('>>>>>>>>>>>updatePages called', src);
   if (!book.value) return;
+  console.log('fontSize.value:', fontSize.value);
 
-  // Показываем прелоадер
+  if (isLoading.value) {
+    console.log('>>>>>>>>>>>updatePages called, but isLoading is true');
+    return;
+  };
+
+  // Проверяем кеш перед пересчетом
+  const cached = loadPagesFromCache(book.value.id, fontSize.value);
+  if (cached && cached.pages.length > 0) {
+    console.log(`Загружены страницы из кеша: ${cached.pages.length} страниц`);
+    pages.value = cached.pages;
+    totalPages.value = cached.totalPages;
+    isLoading.value = false;
+    return;
+  }
+
+  // Показываем прелоадер только если нет кеша
   isLoading.value = true;
 
   // Умная разбивка на страницы
-  // const content = normalizeTextPreserveParagraphs(book.value.content);
   const content = book.value.content;
-  // console.log('Normalized content:', content);
-  // const newPages: string[] = [];
   if (!content || content.trim().length === 0) {
     console.warn('Book content is empty!');
     pages.value = ['Нет содержимого для отображения'];
     totalPages.value = 1;
+    isLoading.value = false;
     return;
   }
 
   // РЕАЛЬНАЯ пагинация основанная на размерах экрана
   console.log(`=== REAL PAGINATION DEBUG ===`);
-  console.log(`Font size: ${settings.value.fontSize}px`);
+  console.log(`Font size: ${fontSize.value}px`);
   console.log('Original content length:', content.length);
 
   // Ждем, пока DOM элементы будут готовы
@@ -245,7 +233,9 @@ async function updatePages(src: string) {
 
   console.log(`=== FINAL RESULT ===`);
   console.log(`Created ${newPages.length} pages`);
-  // console.log('All page lengths:', newPages.map(page => page.length));
+
+  // Сохраняем пересчитанные страницы в кеш
+  savePagesToCache(book.value.id, fontSize.value, newPages);
 
   // Проверяем, что текущая страница не выходит за границы
   if (currentPage.value >= totalPages.value) {
@@ -357,21 +347,31 @@ function handleTouchEnd(event: TouchEvent) {
   position: relative;
 }
 
-.pagination-loader {
-  width: 90%;
+.fullscreen-loader {
   position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loader-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  min-height: 200px;
-  color: var(--text-color);
-}
-
-.pagination-loader small {
-  opacity: 0.7;
-  margin-top: 8px;
+  background: var(--bg-color, #ffffff);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  color: var(--text-color, #333333);
+  min-width: 200px;
 }
 
 .page-content {
@@ -470,22 +470,6 @@ function handleTouchEnd(event: TouchEvent) {
   background: rgba(0, 0, 0, 0.2);
 }
 
-.settings-panel {
-  position: absolute;
-  bottom: 60px;
-  left: 16px;
-  right: 16px;
-  z-index: 200;
-}
-
-.settings-card {
-  background: var(--bg-color);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-}
-
-
-
 .full-height {
   height: 100vh;
 }
@@ -547,40 +531,14 @@ function handleTouchEnd(event: TouchEvent) {
   background: rgba(92, 75, 55, 0.2);
 }
 
-/* Улучшаем видимость кнопок переключения темы */
-.settings-card .q-btn-toggle .q-btn {
-  border: 1px solid rgba(0, 0, 0, 0.2) !important;
-  background: rgba(255, 255, 255, 0.8) !important;
-  color: #333 !important;
+/* Стили прелоадера для разных тем */
+.theme-dark .loader-content {
+  background: var(--bg-color, #1a1a1a);
+  color: var(--text-color, #e0e0e0);
 }
 
-.settings-card .q-btn-toggle .q-btn--active {
-  background: var(--q-accent) !important;
-  color: white !important;
-  border-color: var(--q-accent) !important;
-}
-
-/* Дополнительные стили для темной темы */
-.theme-dark .settings-card .q-btn-toggle .q-btn {
-  background: rgba(255, 255, 255, 0.1) !important;
-  color: #e0e0e0 !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
-}
-
-.theme-dark .settings-card .q-btn-toggle .q-btn--active {
-  background: var(--q-accent) !important;
-  color: white !important;
-}
-
-/* Стили для темы сепия */
-.theme-sepia .settings-card .q-btn-toggle .q-btn {
-  background: rgba(92, 75, 55, 0.1) !important;
-  color: #5c4b37 !important;
-  border-color: rgba(92, 75, 55, 0.3) !important;
-}
-
-.theme-sepia .settings-card .q-btn-toggle .q-btn--active {
-  background: var(--q-accent) !important;
-  color: white !important;
+.theme-sepia .loader-content {
+  background: var(--bg-color, #f7f3e9);
+  color: var(--text-color, #5c4b37);
 }
 </style>

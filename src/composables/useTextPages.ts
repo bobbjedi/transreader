@@ -28,6 +28,7 @@ export const useTextPages = async (content: string, options: PaginateOptions): P
     return [];
   }
 
+
   // Ждем, пока DOM элементы будут готовы
   await sleep(100);
 
@@ -38,6 +39,9 @@ export const useTextPages = async (content: string, options: PaginateOptions): P
     console.error('Container not available, using fallback pagination');
     return [];
   }
+
+  await sleep(100);
+
 
   const style = getComputedStyle(container);
   const paddingTop = parseFloat(style.paddingTop);

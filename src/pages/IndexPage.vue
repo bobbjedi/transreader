@@ -42,26 +42,6 @@
         </q-card-section>
       </q-card>
 
-      <!-- Настройки -->
-      <q-card class="q-pa-md">
-        <q-card-section>
-          <div class="text-h6 q-mb-md">Настройки по дефолту</div>
-
-          <div class="q-mb-md">
-            <q-item-label class="q-mb-sm">Размер шрифта: {{ fontSize }}px</q-item-label>
-            <q-slider v-model="fontSize" :min="12" :max="24" :step="1" label color="primary" />
-          </div>
-
-          <div class="q-mb-md">
-            <q-item-label class="q-mb-sm">Тема</q-item-label>
-            <q-btn-toggle v-model="theme" :options="[
-              { label: 'Светлая', value: 'light' },
-              { label: 'Темная', value: 'dark' },
-              { label: 'Сепия', value: 'sepia' }
-            ]" color="primary" toggle-color="accent" unelevated spread />
-          </div>
-        </q-card-section>
-      </q-card>
     </div>
   </q-page>
 </template>
