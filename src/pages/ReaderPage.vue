@@ -71,7 +71,10 @@ import TranslateDialog from 'src/components/TranslateDialog.vue';
 import ReaderSettings from 'src/components/ReaderSettings.vue';
 import { wrapContentToWords } from 'src/composables/useTranslate';
 import { fontSize, theme } from 'src/composables/useReaderSettings';
+import { useBookManager } from 'src/composables/useBookManager';
 
+
+const { getBookContent } = useBookManager();
 
 watch(() => fontSize.value, () => {
   // При изменении размера шрифта очищаем старые кеши для текущей книги
@@ -84,10 +87,10 @@ watch(() => fontSize.value, () => {
 interface Book {
   id: string;
   title: string;
-  content: string;
   pages: number;
   size: number;
   fileName: string;
+  addedAt: number;
 }
 
 
@@ -198,7 +201,7 @@ async function updatePages(src: string) {
   isLoading.value = true;
 
   // Умная разбивка на страницы
-  const content = book.value.content;
+  const content = getBookContent(book.value.id);
   if (!content || content.trim().length === 0) {
     console.warn('Book content is empty!');
     pages.value = ['Нет содержимого для отображения'];
@@ -217,7 +220,7 @@ async function updatePages(src: string) {
 
   // Получаем реальные размеры контейнера
 
-  const newPages = await useTextPages(book.value.content, {
+  const newPages = await useTextPages(content, {
     container: contentRef.value as HTMLElement,
     measurer: document.getElementById('reader-measurer') as HTMLElement,
     wordsPerStep: 3,

@@ -1,13 +1,25 @@
 import { useQuasar } from 'quasar';
 import { usePageCache } from './usePageCache';
 
-export interface Book {
+// Метаданные книги (хранятся в reader-books)
+export interface BookMetadata {
   id: string;
   title: string;
-  content: string;
   pages: number;
   size: number;
   fileName: string;
+  addedAt: number;
+}
+
+// Полная книга с контентом (для совместимости)
+export interface Book extends BookMetadata {
+  content: string;
+}
+
+// Контент книги (хранится отдельно)
+export interface BookContent {
+  id: string;
+  content: string;
 }
 
 export function useBookManager() {
@@ -15,18 +27,79 @@ export function useBookManager() {
   const { clearBookCache } = usePageCache();
 
   /**
-   * Получить все книги из localStorage
+   * Получить все метаданные книг
    */
-  function getAllBooks(): Book[] {
+  function getAllBooksMetadata(): BookMetadata[] {
     const savedBooks = localStorage.getItem('reader-books');
     return savedBooks ? JSON.parse(savedBooks) : [];
   }
 
   /**
-   * Сохранить книги в localStorage
+   * Получить все книги с контентом (для совместимости)
+   */
+  function getAllBooks(): Book[] {
+    const metadata = getAllBooksMetadata();
+    return metadata.map(meta => {
+      const content = getBookContent(meta.id);
+      return {
+        ...meta,
+        content: content || ''
+      };
+    });
+  }
+
+  /**
+   * Получить контент книги по ID
+   */
+  function getBookContent(bookId: string): string | null {
+    const contentKey = `reader-book-content-${bookId}`;
+    return localStorage.getItem(contentKey);
+  }
+
+  /**
+   * Сохранить контент книги
+   */
+  function saveBookContent(bookId: string, content: string): void {
+    const contentKey = `reader-book-content-${bookId}`;
+    localStorage.setItem(contentKey, content);
+  }
+
+  /**
+   * Удалить контент книги
+   */
+  function deleteBookContent(bookId: string): void {
+    const contentKey = `reader-book-content-${bookId}`;
+    localStorage.removeItem(contentKey);
+  }
+
+  /**
+   * Сохранить метаданные книг
+   */
+  function saveBooksMetadata(metadata: BookMetadata[]): void {
+    localStorage.setItem('reader-books', JSON.stringify(metadata));
+  }
+
+  /**
+   * Сохранить книги (для совместимости)
    */
   function saveBooks(books: Book[]): void {
-    localStorage.setItem('reader-books', JSON.stringify(books));
+    // Разделяем на метаданные и контент
+    const metadata: BookMetadata[] = books.map(book => ({
+      id: book.id,
+      title: book.title,
+      pages: book.pages,
+      size: book.size,
+      fileName: book.fileName,
+      addedAt: book.addedAt || Date.now()
+    }));
+
+    // Сохраняем метаданные
+    saveBooksMetadata(metadata);
+
+    // Сохраняем контент отдельно
+    books.forEach(book => {
+      saveBookContent(book.id, book.content);
+    });
   }
 
   /**
@@ -58,9 +131,13 @@ export function useBookManager() {
           color: 'negative'
         }
       }).onOk(() => {
-        // Удаляем книгу из списка
-        const updatedBooks = books.filter(book => book.id !== id);
-        saveBooks(updatedBooks);
+        // Удаляем метаданные книги
+        const metadata = getAllBooksMetadata();
+        const updatedMetadata = metadata.filter(book => book.id !== id);
+        saveBooksMetadata(updatedMetadata);
+
+        // Удаляем контент книги
+        deleteBookContent(id);
 
         // Очищаем кеш страниц для удаляемой книги
         clearBookCache(id);
@@ -91,24 +168,71 @@ export function useBookManager() {
    * Добавить книгу
    */
   function addBook(book: Book): void {
-    const books = getAllBooks();
-    books.push(book);
-    saveBooks(books);
+    // Создаем метаданные
+    const metadata: BookMetadata = {
+      id: book.id,
+      title: book.title,
+      pages: book.pages,
+      size: book.size,
+      fileName: book.fileName,
+      addedAt: Date.now()
+    };
+
+    // Добавляем метаданные
+    const existingMetadata = getAllBooksMetadata();
+    existingMetadata.push(metadata);
+    saveBooksMetadata(existingMetadata);
+
+    // Сохраняем контент отдельно
+    saveBookContent(book.id, book.content);
   }
 
   /**
    * Получить книгу по ID
    */
   function getBookById(id: string): Book | undefined {
-    const books = getAllBooks();
-    return books.find(book => book.id === id);
+    const metadata = getAllBooksMetadata();
+    const bookMeta = metadata.find(book => book.id === id);
+
+    if (!bookMeta) return undefined;
+
+    const content = getBookContent(id);
+    if (!content) return undefined;
+
+    return {
+      ...bookMeta,
+      content
+    };
+  }
+
+  /**
+   * Очистить все данные книг (старый и новый формат)
+   */
+  function clearAllBooksData(): void {
+    // Очищаем старый формат
+    localStorage.removeItem('reader-books');
+
+    // Очищаем контент всех книг
+    const keys = Object.keys(localStorage);
+    const contentKeys = keys.filter(key => key.startsWith('reader-book-content-'));
+    contentKeys.forEach(key => {
+      localStorage.removeItem(key);
+    });
+
+    console.log('Очищены все данные книг');
   }
 
   return {
     getAllBooks,
+    getAllBooksMetadata,
+    getBookContent,
     saveBooks,
+    saveBooksMetadata,
+    saveBookContent,
     deleteBookById,
+    deleteBookContent,
     addBook,
-    getBookById
+    getBookById,
+    clearAllBooksData
   };
 }

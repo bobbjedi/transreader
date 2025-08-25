@@ -65,22 +65,15 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useTheme } from 'src/composables/useTheme';
+import type { BookMetadata } from 'src/composables/useBookManager';
 
-interface Book {
-  id: string;
-  title: string;
-  content: string;
-  pages: number;
-  size: number;
-  fileName: string;
-}
 
 const route = useRoute();
 const router = useRouter();
 const { loadUITheme, toggleUITheme, isUIThemeDark } = useTheme();
 
 const leftDrawerOpen = ref(false);
-const recentBooks = ref<Book[]>([]);
+const recentBooks = ref<BookMetadata[]>([]);
 
 // Показываем хедер только на главной странице
 const showHeader = computed(() => {
@@ -108,7 +101,7 @@ function goHome() {
   leftDrawerOpen.value = false;
 }
 
-function openBook(book: Book) {
+function openBook(book: BookMetadata) {
   localStorage.setItem('current-book', JSON.stringify(book));
   void router.push(`/reader/${book.id}`);
   leftDrawerOpen.value = false;

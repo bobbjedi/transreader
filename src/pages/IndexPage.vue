@@ -50,15 +50,16 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
-import { useBookManager, type Book } from 'src/composables/useBookManager';
+import type { Book } from 'src/composables/useBookManager';
+import { useBookManager, type BookMetadata } from 'src/composables/useBookManager';
 
 const router = useRouter();
 const $q = useQuasar();
-const { getAllBooks, deleteBookById, addBook } = useBookManager();
+const { getAllBooksMetadata, deleteBookById, addBook } = useBookManager();
 
 const selectedFile = ref<File | null>(null);
 const isLoading = ref(false);
-const books = ref<Book[]>([]);
+const books = ref<BookMetadata[]>([]);
 const fontSize = ref(16);
 const theme = ref('light');
 
@@ -81,7 +82,7 @@ function saveSettings() {
 }
 
 function loadBooks() {
-  books.value = getAllBooks();
+  books.value = getAllBooksMetadata();
 }
 
 async function handleFileSelect(file: File | null) {
@@ -94,7 +95,7 @@ async function handleFileSelect(file: File | null) {
     const parsedBook = parseBook(file, content);
 
     addBook(parsedBook);
-    books.value = getAllBooks();
+    books.value = getAllBooksMetadata();
 
     $q.notify({
       type: 'positive',
@@ -237,7 +238,8 @@ function parseBook(file: File, content: string): Book {
     content: cleanContent,
     pages,
     size: file.size,
-    fileName: file.name
+    fileName: file.name,
+    addedAt: Date.now()
   };
 }
 
@@ -247,7 +249,7 @@ function formatFileSize(bytes: number): string {
   return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 }
 
-function openBook(book: Book) {
+function openBook(book: BookMetadata) {
   saveSettings();
   localStorage.setItem('current-book', JSON.stringify(book));
   localStorage.setItem('reader-settings', JSON.stringify({
@@ -261,7 +263,7 @@ async function handleDeleteBook(bookId: string) {
   const success = await deleteBookById(bookId);
   if (success) {
     // Обновляем список книг после удаления
-    books.value = getAllBooks();
+    books.value = getAllBooksMetadata();
   }
 }
 </script>
