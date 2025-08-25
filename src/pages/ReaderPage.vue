@@ -80,7 +80,8 @@
 import { ref, computed, onMounted, nextTick, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
-import { normalizeTextPreserveParagraphs } from 'src/composables/useTextPages';
+import { splitByWords } from 'src/composables/useTextPages';
+// import { normalizeTextPreserveParagraphs } from 'src/composables/useTextPages';
 
 interface Book {
   id: string;
@@ -193,12 +194,11 @@ async function updatePages() {
   await nextTick();
   await new Promise(resolve => setTimeout(resolve, 100));
 
-  console.log('updatePages called, book content length:', book.value.content.length);
-
   // Умная разбивка на страницы
-  const content = normalizeTextPreserveParagraphs(book.value.content);
+  // const content = normalizeTextPreserveParagraphs(book.value.content);
+  const content = book.value.content;
+  // console.log('Normalized content:', content);
   const newPages: string[] = [];
-
   if (!content || content.trim().length === 0) {
     console.warn('Book content is empty!');
     pages.value = ['Нет содержимого для отображения'];
@@ -226,7 +226,7 @@ async function updatePages() {
   const paddingTop = parseFloat(style.paddingTop);
   const paddingBottom = parseFloat(style.paddingBottom);
 
-  const visibleHeight = container.clientHeight - paddingTop - paddingBottom;
+  const visibleHeight = container.clientHeight - paddingTop - paddingBottom + 10; // + 10 для зазора на лишнюю строку
   console.log('Контентная высота без паддингов:', visibleHeight);
 
 
@@ -242,21 +242,20 @@ async function updatePages() {
 
   console.log('Created text measurer');
 
-  // Разбиваем на предложения для точной пагинации
-  const sentences = content.split(/(?<=[.!?])\s+/).filter(s => s.trim().length > 0);
-
-  console.log(`Found ${sentences.length} sentences`);
+  const sentences = splitByWords(content, 5);
+  console.log(`Found ${sentences.length} words`);
 
   let currentPageText = '';
   let sentenceIndex = 0;
 
+  console.log('Start counting pages...');
   while (sentenceIndex < sentences.length) {
     // Пробуем добавить следующее предложение
     const testText = currentPageText + (currentPageText ? ' ' : '') + sentences[sentenceIndex];
     measurer.textContent = testText;
 
     const textHeight = measurer.scrollHeight;
-    console.log(`Testing sentence ${sentenceIndex}, height: ${textHeight}px, visibleHeight: ${visibleHeight}px`);
+    // console.log(`Testing sentence ${sentenceIndex}, height: ${textHeight}px, visibleHeight: ${visibleHeight}px`);
 
     // Если текст помещается на страницу
     if (textHeight <= visibleHeight) {
@@ -267,17 +266,16 @@ async function updatePages() {
       if (currentPageText.length > 0) {
         // Сохраняем текущую страницу
         newPages.push(currentPageText.trim());
-        console.log(`Page ${newPages.length} completed with ${currentPageText.length} chars`);
+        // console.log(`Page ${newPages.length} completed with ${currentPageText.length} chars`);
         currentPageText = '';
       } else {
         // Даже одно предложение не помещается - принудительно добавляем
         newPages.push((sentences[sentenceIndex] || '').trim());
-        console.log(`Page ${newPages.length} - forced single sentence`);
+        // console.log(`Page ${newPages.length} - forced single sentence`);
         sentenceIndex++;
       }
     }
   }
-
   // Добавляем последнюю страницу
   if (currentPageText.trim().length > 0) {
     newPages.push(currentPageText.trim());
@@ -286,8 +284,7 @@ async function updatePages() {
 
   container.style.position = prevPosition;
   measurer.style.display = 'none';
-  // Убираем временный элемент
-  // document.body.removeChild(measurer);
+
 
 
   pages.value = newPages;
@@ -295,7 +292,7 @@ async function updatePages() {
 
   console.log(`=== FINAL RESULT ===`);
   console.log(`Created ${newPages.length} pages`);
-  console.log('All page lengths:', newPages.map(page => page.length));
+  // console.log('All page lengths:', newPages.map(page => page.length));
 
   // Проверяем, что текущая страница не выходит за границы
   if (currentPage.value >= totalPages.value) {

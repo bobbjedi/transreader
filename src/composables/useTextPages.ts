@@ -114,3 +114,17 @@ export const useTextPages = async (content: string, options: PaginateOptions): P
   return newPages;
 }
 
+
+
+export function splitByWords(text: string, wordsPerPage = 5): string[] {
+  // Разделяем текст на слова (учитываем пробелы и переносы)
+  const words = text.split(/\s+/).filter(w => w.trim().length > 0);
+  const pages: string[] = [];
+
+  for (let i = 0; i < words.length; i += wordsPerPage) {
+    const page = words.slice(i, i + wordsPerPage).join(' ');
+    pages.push(page);
+  }
+
+  return pages;
+}
