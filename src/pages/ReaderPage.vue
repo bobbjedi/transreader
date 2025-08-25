@@ -29,6 +29,9 @@
         </div>
       </div>
 
+      <!-- Компонент перевода -->
+      <TranslateDialog :page-text="currentPageContent" />
+
       <!-- Индикатор страницы -->
       <div class="page-indicator">
         {{ currentPage + 1 }} / {{ totalPages }}
@@ -64,8 +67,6 @@
           </q-card>
         </div>
       </q-slide-transition>
-
-
     </div>
 
     <!-- Загрузка -->
@@ -83,6 +84,7 @@ import { useQuasar } from 'quasar';
 import { useTextPages } from 'src/composables/useTextPages';
 // import { normalizeTextPreserveParagraphs } from 'src/composables/useTextPages';
 import { translatePhrase, translateWord } from 'src/composables/useTranslate';
+import TranslateDialog from 'src/components/TranslateDialog.vue';
 
 
 // --- ДЕБАГ ТЕСТЫ ---

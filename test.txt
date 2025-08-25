@@ -1,17 +1,142 @@
-Папа говорит:&nbsp;
-
-— Почему обязательно польза? Вот какая польза от этой картины на стене? — От этой картины на стене, — говорит мама, — очень большая польза. Она дырку на обоях загораживает. — Ну и что? — не соглашается папа. — И от кота будет польза. Мы его на собаку выучим. Будет у нас сторожевой кот. Будет дом охранять. Не лает, не кусает, а в дом не пускает. Мама даже рассердилась:
-
-— Вечно ты со своими фантазиями! Ты мне сына испортил… &mdash; Ну вот что. Если тебе этот кот так нравится, выбирай: или он, или я. Папа сначала на маму посмотрел, потом на кота. Потом опять на маму и опять на кота. — Я, — говорит, — тебя выбираю. Я с тобой уже давно знаком, а этого кота первый раз вижу. — А ты, дядя Фёдор, кого выбираешь? — спрашивает мама. — А никого, — отвечает мальчик. — Только если вы кота прогоните, я тоже от вас уйду. — Это ты как хочешь. — говорит мама, — только чтобы кота завтра не было! Она, конечно, не верила, что дядя Фёдор из дома уйдет. И папа не верил. Они думали, что он просто так говорит. А он серьезно говорил. А он с вечера сложил в рюкзак все, что надо. И ножик перочинный, и куртку теплую, и фонарик. Взял все деньги, которые на аквариум копил. И приготовил сумку для кота. Кот как раз в этой сумке помещался, только усы наружу торчали. И лег спать. Утром папа с мамой на работу ушли. Дядя Фёдор проснулся, сварил себе каши, позавтракал с котом и стал письмо писать:
-
-ДОРОГИЕ МОИ РОДИТЕЛИ! ПАПА И МАМА! Я ВАС ОЧЕНЬ ЛЮБЛЮ. И ЗВЕРЕЙ Я ОЧЕНЬ ЛЮБЛЮ. И ЭТОГО КОТА ТОЖЕ. А ВЫ МНЕ НЕ РАЗРЕШАЕТЕ ЕГО ЗАВОДИТЬ. ВЕЛИТЕ ИЗ ДОМА ПРОГНАТЬ. А ЭТО НЕПРАВИЛЬНО. Я УЕЗЖАЮ В ДЕРЕВНЮ И БУДУ ТАМ ЖИТЬ. ВЫ ЗА МЕНЯ НЕ БЕСПОКОЙТЕСЬ. Я НЕ ПРОПАДУ. Я ВСЕ УМЕЮ ДЕЛАТЬ И БУДУ ВАМ ПИСАТЬ. А В ШКОЛУ МНЕ ЕЩЕ НЕ СКОРО. ТОЛЬКО НА БУДУЩИЙ ГОД. ДО СВИДАНЬЯ. Он положил это письмо в свой собственный почтовый ящик, взял рюкзак и кота в сумке и пошел на автобусную остановку. &#128049; Глава вторая
-
-Деревня
-
-Дядя Фёдор сел в автобус и поехал. Ехать было хорошо. Автобусы в это время за город совсем пустые идут. И никто им не мешал разговаривать. Дядя Фёдор спрашивал, а кот из сумки отвечал. Дядя Фёдор спрашивает:
-
-— Как тебя зовут? Кот говорит:
-
-— И не знаю как. И Барсиком меня звали, и Пушком, и Оболтусом. И даже «Кис Кисычем» я был. Только мне все это не нравится. Я хочу фамилию иметь. — Какую? — Какую-нибудь серьезную. Морскую фамилию. Я же из морских котов. Из корабельных. У меня и бабушка, и дедушка на кораблях плавали с матросами. И меня тоже в море тянет. Очень я по океанам тоскую. Только мне воды боюсь. — А давай мы дадим тебе фамилию Матроскин, — говорит дядя Фёдор. — И с котами связано, и что-то морское есть в этой фамилии. — Да, морское здесь есть, — соглашается кот, — это верно. А чем же это с котами связано? — Не знаю, — говорит дядя Фёдор. — Может быть, тем, что коты полосатые, и матросы тоже. У них тельняшки такие. И кот согласился:
-
-— Мне нравится такая фамилия — Матроскин. И морская, и серьезная. Он так обрадовался, что у него теперь фамилия есть, что даже заулыбался от радости. Он поглубже в сумку залез и стал свою фамилию примерять: «Позовите, пожалуйста, кота Матроскина к телефону». — «Кот Матроскин подойти к телефону не может. Он очень занят.» И чем больше он примерял, тем больше ему нравилось.
+   It was the day of my Judgment, and I was prepared in a thousand ways that didn’t matter.
+   If I have a choice between tests, I’ll pick a dialogue or mathematical challenge before accepting a combat challenge.
+   In the unfortunate event that I’m stuck in a combat challenge, I’ll try to run if there’s anything bigger than a goblin. Possibly even if it’s a goblin, depending on how mean he looks.
+   Spike traps are not my friends. Spike traps are the enemy. I will avoid them at all costs.
+   I’d been training for this day for five years — since the day my brother, Tristan, had left for his own Judgment. He’d entered the Serpent Spire and, like so many others, he’d never returned.
+   Now, at seventeen, I stood among hundreds of my peers. They were waiting to try their luck. But I didn’t trust luck. Luck wasn’t reliable.
+   Instead of relying on the fickleness of chance, I’d taken everything with me that I thought might help.
+   Bringing weapons and armor into the test was strictly forbidden, but there weren’t any rules about bringing a backpack full of supplies. I had double checked, triple checked. Maybe they’d consider my grappling hook a weapon, but crossing a downed bridge was one of the most common challenges, so I doubted it.
+   My boots were more durable than the shoes my companions tended to wear and offered vastly better traction. Instead of a silken shirt, I wore a black leather doublet and pants. Not currently fashionable, but more likely to slow down a claw or blade.
+   I’d studied, too, but there was a limit to what I could learn from the experiences of others. After a Judgment, the memories of the individual who took the tests would rapidly fade, similar to waking from a dream. Some people held onto stronger memories than others. I read every book, essay, and scrap of paper that I could find with hints about what others had experienced. But nothing was reliable.
+   Apparently, Selys — our beneficent goddess, creator of this death trap tower and all the others — wanted to maintain a degree of mystery for newcomers.
+   Even with all my preparation, I wasn’t sure what my odds were of surviving the ordeal. From the grim expressions of my peers, I could tell some of them were running the same numbers in their heads that I was.
+   Or maybe they were just intimidated by the sight of the spire. I’d seen the tower from a distance before, and I knew it was big, but… that word wasn’t close to describing it. Gigantic might have scratched the surface. Titanic, perhaps?
+   I couldn’t even see where it ended.
+   The spire was roughly cylindrical in shape, constructed of dull blue stone I hadn’t seen anywhere else. The circumference of the tower’s base was nearly as impressive as the height. It eclipsed the size of any ordinary castle.
+   Our scholars, military, and adventurers had spent years attempting to map the interior of the spire. Even their combined efforts barely covered a fraction of the estimated rooms within. This wasn’t just due to the size. The spire’s interior layout constantly changed, with rooms and passages appearing and disappearing on a daily basis.
+   The Gates of Judgment were open wide, but it wasn’t an inviting effect. With ogre-sized jagged spikes of rock surrounding the entrance, it looked more like the tower had opened its jaws to swallow its victims whole.
+   Most people were willing to risk entering the spire for a single reason: it was a chance to earn an attunement, a mark of Selys’ favor.
+   Every attunement brought power along with it, a fragment of the goddess’ blessing. Some attuned could heal wounds with a touch. Others could hurl blasts of lightning. Every attunement extracted a cost, but that didn’t stop anyone from trying to earn one.
+   Father was attuned. Mother was attuned. Shouldn’t it have been easy for Tristan to pass the same tests?
+   Tristan had every advantage. As the firstborn, Mother and Father trained him endlessly, drilled him on their own experiences within the tower. No two Judgments were identical, but common elements had been found. Physical challenges. Puzzles. Tests of intellect.
+   He’d studied, prepared, and taken every mock test imaginable. He’d still failed.
+   Mother left not long after that, and Father insisted on personally providing me with additional training. After two years, he pulled me out of public school entirely. I’d been practicing dueling every day for the last three years. I had the scars to remind me.
+   Father wanted to hone me into the perfect heir to the family’s legacy. To earn the same attunement he had — the attunement our family was famous for.
+   I didn’t care about any of that. For me, earning an attunement was just one fraction of a longer-term plan.
+   According to legend, the goddess would bestow a boon on anyone who was brave enough to reach the top of one of her spires. There were scattered stories of successes. Heroes who had met the goddess and wished for wealth, power, or even to join her in the divine kingdom floating high above the world.
+   I had no intention of trying to make it to the top of the tower right now. Earning my attunement was just the first step along my path, one that would give me the power necessary to begin my climb.
+   It could take years to grow strong enough to reach the top of the spire.
+   But I’d get there eventually.
+   And I’d ask the goddess to give my brother back. It was the only way to bring my family back together.
+   I was stopped by a pair of copper-armored guards just in front of the gate.
+   “Name?”
+   “Corin Cadence.”
+   One of the guards moved a finger down a list until he found me, crossing out the name. “I’ll need to check your bag and papers.”
+   I handed him the papers first, and then the bag. For the guard, this must have been mundane. Routine. For me, the stakes were a little more serious. I was about to risk my life, and no one had I had met had even commented on that fact. No one had offered a single warning.
+   My father hadn’t even deigned to see me off at the train station. It seemed incongruous, given the time he’d spent preparing me. He’d probably decided I’d feel more confident doing this on my own.
+   As usual, he was wrong.
+   My hands trembled as I glanced to the entrance. I flinched as I watched the applicants in front of me fade into transparency, then nothingness as they crossed the threshold into the tower. It looked like they were disintegrating. Maybe they were. I wouldn’t know until I tried.
+   The guard handed my bag back to me. “You can head on in.”
+   “Thanks.”
+   I stepped up to the threshold. I knew what was going to happen next, but I didn’t like it.
+   No choice. I’ve come this far.
+   I closed my eyes and stepped into the serpent’s maw.
+* * *
+   Every inch of my exposed skin burned, like I had been out in the sun for days. Fortunately, keeping my eyes shut had spared them from sharing that sensation.
+   Less fortunately, that hadn’t prevented the nausea. My stomach reacted next, and I pitched over to vomit on the gray stone floor. My eyes fluttered open after my meager lunch abandoned me.
+   I stood in the middle of a chamber of white stone. A bright glow illuminated the room with no discernable source. The room was circular, maybe thirty feet in diameter. At the center was a formation of waist-height pillars. I counted twelve in total.
+   Each pillar had a single object atop it. My first challenge. My first choice.
+   The room had three discernable exits, and I glanced at them before I took any further steps. One was straight across from me, the others ninety degrees to either side. I turned around briefly, but there was no exit door, just as I had been warned.
+   The doors themselves were etched with similar runes to the ones that had guarded the tower itself. They each had a single central symbol: a circle with a colorful crystal within. The gems were blue, yellow, and red, from right to left. The books I had studied had mentioned similar doors. Opening a door was as simple as touching the gem, but various authors speculated that the colors had some significance. Most believed that red was the path of violence, for example.
+   I’d worry about that part after I figured out what I was doing here.
+   I stepped toward the center of the room. The pillars made a smaller circle within the chamber, spread equidistant from one another. The objects on the pillars were generally easy to identify.
+   A key, golden, with a wing motif.
+   A scroll, sealed with wax.
+   A book, roughly as thick as my closed fist.
+   I paused there, taking a closer look at the book. The cover was leather, more in the style of a personal journal than a textbook. There was no writing on the surface.
+   Interesting. I’ll need to take a closer look at this later.
+   I walked over to the next section of items.
+   The first item that caught my eye was a ruby statue of Katashi, the Visage of Valor. Interesting, because Katashi was not the visage typically associated with this spire — that’d be Tenjin, the Visage of Inspiration.
+   The next pedestal appeared to be empty. Suspicious.
+   The third had a quill, the tip dripping with ink. No corresponding inkwell. A magic quill, maybe?
+   Maybe the quill is meant to be paired with the book? Hrm.
+   I walked to the next section, noting that these pillars all held weapons.
+   A sword with an ornate bronze hilt, sheathed.
+   A dueling cane in an unfamiliar style.
+   A firearm. I struggled to think of the specific name, but I had only heard of them in books. It had a long barrel and a container of metallic balls next to it. I was surprised to see one, given their rarity on this side of the continent.
+   The final three pillars all held wearable items.
+   A dueling vest, the cloth etched with runes.
+   A shield, wood-lined with metal.
+   A circlet studded with numerous gemstones. I didn’t see any runes etched into it, so I didn’t think it was enchanted, but I wasn’t exactly an expert on magic. Not yet, anyway.
+   Well, this isn’t exactly the death trap I was expecting.
+   I’d never heard of a room like this before. Maybe most people didn’t count it as a test? That seemed doubtful. My understanding was that every movement I made within the spire was being evaluated.
+   So, I got an unusual starting room. That was fine. I’d heard about rooms with items in them before, just not this particular layout. Generally, taking items was safe.
+   Generally.
+   Maybe it was a test of greed… Was I supposed to leave everything behind? Or maybe just take a single item?
+   I shook my head. I could guess indefinitely without coming up with an answer.
+   I took a closer look at the platforms themselves, examining them for anything unusual. Hidden panels, clues, or switches. The goddess loved that sort of thing… so they said, at least.
+   I didn’t find any, which was deeply worrying.
+   Time to prioritize, then.
+   I knew there was a good chance something would happen when I picked up the first item. Perhaps a trap would trigger somewhere, or the other items would vanish.
+   Assuming this equipment was meant to be taken, what did I need the most?
+   The key could be, well, a key to my success. Or totally worthless. The scroll was the same; it could easily be a map to the dungeon or some esoteric notes on mathematical theory. The book had the same degree of binary promise.
+   The next set didn’t impress me, although I did strongly consider touching the empty pedestal to see if it triggered anything. Maybe I was supposed to put something on it? Sacrifice something of value in exchange for what I was taking?
+   I’d do that if I had a chance, I decided. And if I happened to dislodge an invisible object in the process, all the better.
+   Weapons. Yeah, those could be useful. This place was riddled with monsters, and I wasn’t allowed to bring a weapon inside. Maybe the goddess knew I’d need a way to fight.
+   Or maybe I’d only run into monsters if I took a weapon. It was broadly speculated that the configuration of the tower reacted to choices in any given room.
+   The next section was the wearables. The dueling vest was extremely tempting. The runes on the surface made it resistant to damage from both physical attacks and weak magical ones. Depending on the density of the runes, a vest could typically handle between one and three hits before needing repairs. This one looked to be high quality.
+   Ultimately, my curiosity made my decision for me.
+   I put my hand on the empty pedestal, groping for an invisible object, and then feeling along the surface.
+   Nothing happened.
+   Huh.
+   I opened my backpack next, going through my stuff. An unlit candle, a piece of flint and a tiny metal rod for striking it, food, water, a handful of coins, a roll of bandages, and a coil of rope.
+   The handful of coins amounted to the majority of my personal wealth, and the single gold coin most of that.
+   I put the coin on the pedestal.
+   Again, no obvious reaction from the room.
+   I left it there anyway, moving to the pedestal with the key. Flexing my hands in the air, I took a deep breath, and then snatched it.
+   Again, nothing.
+   Sometimes a pedestal was just a pedestal, I supposed.
+   I wasn’t going to take any chances. I dropped the key into my bag, and then put one of my lesser coins in the place the key had been.
+   The key was my first priority because I didn’t think anything here would be useless. Selys was difficult to predict, but scholars agreed that she was generally “fair”. Everything here would have value, either within the tower or outside it. Possibly both.
+   I needed whatever was most likely to be relevant here, and the key topped that list, followed by the quill and the scroll. Everything else was likely to have at least some value outside of the spire, and thus would not necessarily need to have any use within it.
+   The hardest choice was determining if I wanted to take a weapon, with the knowledge that the choice might influence the challenges to come.
+   My father would have wanted me to pick up a weapon, to push for combat tests as much as possible.
+   Our family had made our name in battle. He was a Shaper like his father and his grandfather. If I didn’t at least make an effort to carry on the family tradition, I knew he’d be ashamed of me.
+   But I loathed hurting people. I always had. I’d trained with my father for years, and I enjoyed the rush of sparring as much of anyone, but in those rare moments I’d managed to hurt him — or anyone else — I’d shut down.
+   Father thought that made me weak. Maybe he was right, but it didn’t change anything.
+   There was something I feared more than hurting others, however, and that was failing my brother.
+   Finding him was something I was willing to fight for.
+   I picked up the dueling cane and examined the surface.
+   The weapon was a metallic rod about the length of my forearm. The grip was black crystal inscribed with runes that would conduct my internal essence into the weapon. I adjusted my grip so that my thumb hovered over a button, presumably the trigger. I found a switch on the opposite end, which most likely would deploy the foot-long metallic blade within.
+   My own dueling canes had always been purely runic; the trigger mechanisms based on touching a rune and the application of focused thought. I was not an attuned — I had no magical abilities of my own — but anyone could use a dueling cane with sufficient practice. And I had practiced. And practiced.
+   A runic weapon like this would tear mana from the inside of the wielder’s body, using it to power a blast of energy if the cane was in its default state, or to charge the blade with energy if the weapon had been deployed. Duelists learned to quickly switch between states to use the melee and ranged functions. A single blast from a cane was often enough to incapacitate an unarmored target. Thus, dueling vests were used.
+   I took the dueling vest, too, and slipped it on. I replaced both the weapon and armor with coins.
+   Having already taken three items, I couldn’t resist taking a little bit more, even knowing the ever-growing risk.
+   I took the book and the scroll, again replacing them with coins. I really hoped the goddess liked coins.
+   The dueling cane’s mechanical parts bothered me. It was an unusual design, foreign. I flipped the switch on the back, and it deployed a blade as I expected. I had to push the switch back in and pull it down to get the blade to retract, which was an annoyance. It was most likely spring-loaded.
+   Well, I’d adapt.
+   The weapon had a small clip on the bottom designed to attach to clothing, which I used to secure it on my belt. I’d draw the cane the instant I sensed any chance of combat.
+   I flipped open the book. It appeared to be blank. A puzzle? I’d worry about it later. I put the book away.
+   I broke the seal on the scroll next, unrolling it.
+   On the positive side of things, this had writing on it.
+   Unfortunately, it wasn’t in a language I could read. Valdaric, maybe? I wasn’t a linguistics expert. I rolled it up and shoved it in my pack, mildly irritated.
+   I briefly considered whether or not the quill was meant to be used in conjunction with the blank book.
+   I had no way of knowing, really.
+   One quill exchanged for one coin.
+   A good deal for the goddess, as far as I was concerned. Maybe this whole tower thing was just an excuse to rob seventeen-year-olds of their hard-earned savings.
+   I doubted it, but who could know for sure?
+   I approached the blue door first. Blue was a nice, safe, tranquil color. It also was generally assumed to be associated with mental traits, and I figured I had the best chance of surviving mental puzzles.
+   I touched the gem. The door rumbled, sliding down into a depression in the ground.
+   The next room was square shaped, and in the midst of it, a smaller square, divided into a grid. There were three doors on the opposite side of the room, each with a different color of gem. Purple, green, and — um — maybe indigo?
+   Each of the grid squares near the center had a color-coded tile, and each tile had a foreign symbol within.
+   I really hate color coded tile puzzles.
+   I’d read a lot about this style of puzzle, and even tried a few practice ones. I was terrible at them.
+   I stepped away from the door, shaking my head. It closed without any further interaction my part.
+   I walked over to the red door and opened it.
+   It showed a long, narrow hallway, wide enough for two people to walk abreast. I could see the door on the opposite end, but just barely.
+   In the middle of the path, however, was a monster.
+   The world’s most adorable monster.
+   It looked like a big house cat, with gray and white stripes, sitting with its front paws raised. It had three long, bunny-like ears and a trailing rat-like tail. It tilted its head to the side as it saw me, giving me a quizzical expression.
+   It was too cute to die.
+   I stepped away from the door, chuckling to myself.
+   It’s possible I am the world’s worst adventurer.
