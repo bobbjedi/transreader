@@ -40,6 +40,17 @@
 
       <!-- Панель настроек -->
       <ReaderSettings :show="showSettings" @close="showSettings = false" @font-size-changed="void updatePages()" />
+
+      <!-- Индикатор яркости -->
+      <div v-if="showBrightnessIndicator" class="brightness-indicator">
+        <div class="brightness-icon">
+          <q-icon name="brightness_6" size="24px" />
+        </div>
+        <div class="brightness-bar">
+          <div class="brightness-fill" :style="{ height: brightnessPercentage + '%' }"></div>
+        </div>
+        <div class="brightness-value">{{ brightness }}%</div>
+      </div>
     </div>
 
     <!-- Полноэкранный прелоадер пересчета страниц -->
@@ -78,10 +89,20 @@ import { useBookManager } from 'src/composables/useBookManager';
 import { scrollToTop } from 'src/boot/utils';
 import { useSwipeNavigation } from 'src/composables/useSwipeNavigation';
 import { useOnlineStatus } from 'src/composables/useIsOnline';
+import { useBrightnessGesture } from 'src/composables/useBrightnessGesture';
 
 const { isBrowserTranslateActive } = useOnlineStatus();
 
 const { getBookContent } = useBookManager();
+
+const {
+  isBrightnessAdjusting,
+  showBrightnessIndicator,
+  brightnessPercentage,
+  handleBrightnessTouchStart,
+  handleBrightnessTouchMove,
+  handleBrightnessTouchEnd
+} = useBrightnessGesture();
 
 
 
@@ -125,13 +146,44 @@ const isTranslateCurrentPage = ref(false);
 const contentRef = ref<HTMLElement>();
 // Touch handling
 // Используем composable для свайпов
-const { handleTouchStart, handleTouchMove, handleTouchEnd } = useSwipeNavigation(
+const { handleTouchStart: handleSwipeStart, handleTouchMove: handleSwipeMove, handleTouchEnd: handleSwipeEnd } = useSwipeNavigation(
   prevPage,
   nextPage,
   {
-    disabled: () => showSettings.value
+    disabled: () => showSettings.value || isBrightnessAdjusting.value
   }
 );
+
+// Комбинированные обработчики касаний
+const handleTouchStart = (event: TouchEvent) => {
+  // Сначала проверяем жест яркости
+  const isBrightnessGesture = handleBrightnessTouchStart(event);
+
+  // Если это не жест яркости, передаем в обработчик свайпов
+  if (!isBrightnessGesture) {
+    handleSwipeStart(event);
+  }
+};
+
+const handleTouchMove = (event: TouchEvent) => {
+  // Сначала проверяем жест яркости
+  const isBrightnessGesture = handleBrightnessTouchMove(event);
+
+  // Если это не жест яркости, передаем в обработчик свайпов
+  if (!isBrightnessGesture) {
+    handleSwipeMove(event);
+  }
+};
+
+const handleTouchEnd = (event: TouchEvent) => {
+  // Сначала проверяем жест яркости
+  const isBrightnessGesture = handleBrightnessTouchEnd();
+
+  // Если это не жест яркости, передаем в обработчик свайпов
+  if (!isBrightnessGesture) {
+    handleSwipeEnd(event);
+  }
+};
 
 onMounted(() => {
   loadBook();
@@ -486,6 +538,89 @@ function goBack() {
 .theme-dark .page-nav-left:active,
 .theme-dark .page-nav-right:active {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* Индикатор яркости */
+.brightness-indicator {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 15px 10px;
+  border-radius: 25px;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  animation: fadeInBrightness 0.3s ease-out;
+}
+
+.brightness-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brightness-bar {
+  width: 6px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.brightness-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(to top, #ffa726, #ffcc02, #fff176);
+  border-radius: 3px;
+  transition: height 0.1s ease-out;
+}
+
+.brightness-value {
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  min-width: 40px;
+}
+
+@keyframes fadeInBrightness {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+/* Темная тема для индикатора яркости */
+.theme-dark .brightness-indicator {
+  background: rgba(40, 40, 40, 0.9);
+  color: #e0e0e0;
+}
+
+.theme-dark .brightness-bar {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Сепия тема для индикатора яркости */
+.theme-sepia .brightness-indicator {
+  background: rgba(92, 75, 55, 0.9);
+  color: #f7f3e9;
+}
+
+.theme-sepia .brightness-bar {
+  background: rgba(247, 243, 233, 0.3);
 }
 
 .theme-sepia .reader-header,
