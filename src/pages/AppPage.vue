@@ -5,7 +5,6 @@
             <div class="container">
                 <div class="hero-content">
                     <h1 class="hero-title">📚 Мои книги</h1>
-                    <p class="hero-subtitle">Загружайте книги в форматах FB2 и TXT для изучения языков</p>
                 </div>
             </div>
         </div>
@@ -24,17 +23,9 @@
                                     <div class="upload-description">FB2, TXT файлы</div>
                                 </div>
                             </div>
-                            
-                            <q-file 
-                                v-model="selectedFile" 
-                                label="Выберите файл" 
-                                accept=".fb2,.txt" 
-                                :loading="isLoading" 
-                                @update:model-value="handleFileSelect"
-                                class="upload-input"
-                                outlined
-                                dense
-                            >
+
+                            <q-file v-model="selectedFile" label="Выберите файл" accept=".fb2,.txt" :loading="isLoading"
+                                @update:model-value="handleFileSelect" class="upload-input" outlined dense>
                                 <template v-slot:prepend>
                                     <q-icon name="attach_file" />
                                 </template>
@@ -389,7 +380,6 @@ async function handleRenameBook(book: BookMetadata) {
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
 }
 
 /* Hero секция */
@@ -419,47 +409,47 @@ async function handleRenameBook(book: BookMetadata) {
 
 /* Секция загрузки */
 .upload-section {
-  margin-bottom: 40px;
+    margin-bottom: 40px;
 }
 
 .upload-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  max-width: 600px;
-  margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .upload-content {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
 .upload-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
 }
 
 .upload-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 2px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 2px;
 }
 
 .upload-description {
-  color: #64748b;
-  font-size: 0.85rem;
+    color: #64748b;
+    font-size: 0.85rem;
 }
 
 .upload-input {
-  flex: 1;
-  max-width: 280px;
+    flex: 1;
+    max-width: 280px;
 }
 
 /* Секция книг */
@@ -559,12 +549,12 @@ async function handleRenameBook(book: BookMetadata) {
         padding: 16px;
         margin: 0 16px;
     }
-    
+
     .upload-content {
         flex-direction: column;
         gap: 16px;
     }
-    
+
     .upload-info {
         justify-content: center;
     }
