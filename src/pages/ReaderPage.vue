@@ -26,7 +26,9 @@
 
       <OnlineTranslateDialog :page-text="currentPageContent" :current-page="currentPage" :total-pages="totalPages"
         @prev-page="prevPage" @next-page="nextPage" />
-
+      <div class="fullscreen-toggle-container">
+        <FullscreenToggle />
+      </div>
 
       <PagesPaginator :current-page="currentPage" :total-pages="totalPages" @prev-page="prevPage"
         @next-page="nextPage" />
@@ -518,5 +520,18 @@ function goBack() {
 .theme-sepia .loader-content {
   background: var(--bg-color, #f7f3e9);
   color: var(--text-color, #5c4b37);
+}
+
+.fullscreen-toggle-container {
+  position: fixed;
+  bottom: 50px;
+  right: 35px;
+  font-size: 28px;
+  border-radius: 50%;
+  background-color: var(--bg-color);
+  padding: 0px;
+  opacity: 0.2;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 </style>
