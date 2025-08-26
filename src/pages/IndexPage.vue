@@ -130,6 +130,13 @@
             <h4 class="additional-title">Настройки чтения</h4>
             <p class="additional-description">Размер шрифта, цветовые темы</p>
           </div>
+          <div class="additional-card">
+            <div class="additional-icon">
+              <q-icon name="brightness_6" size="28px" />
+            </div>
+            <h4 class="additional-title">Яркость</h4>
+            <p class="additional-description">Управление яркостью страницы</p>
+          </div>
 
           <div class="additional-card">
             <div class="additional-icon">
