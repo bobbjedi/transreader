@@ -31,6 +31,10 @@
                 </q-item-label>
               </q-item-section>
               <q-item-section side>
+                <q-btn flat round dense icon="edit" color="primary" @click.stop="handleRenameBook(book)"
+                  class="q-mr-sm">
+                  <q-tooltip>Переименовать книгу</q-tooltip>
+                </q-btn>
                 <q-btn flat round dense icon="delete" color="negative" @click.stop="handleDeleteBook(book.id)"
                   class="q-mr-sm">
                   <q-tooltip>Удалить книгу</q-tooltip>
@@ -55,7 +59,7 @@ import { useBookManager, type BookMetadata } from 'src/composables/useBookManage
 
 const router = useRouter();
 const $q = useQuasar();
-const { getAllBooksMetadata, deleteBookById, addBook } = useBookManager();
+const { getAllBooksMetadata, deleteBookById, addBook, saveBooksMetadata } = useBookManager();
 
 const selectedFile = ref<File | null>(null);
 const isLoading = ref(false);
@@ -264,6 +268,65 @@ async function handleDeleteBook(bookId: string) {
   if (success) {
     // Обновляем список книг после удаления
     books.value = getAllBooksMetadata();
+  }
+}
+
+async function handleRenameBook(book: BookMetadata) {
+  const newTitle = await new Promise<string | undefined>((resolve) => {
+    $q.dialog({
+      title: 'Переименовать книгу',
+      message: 'Введите новое название:',
+      prompt: {
+        model: book.title,
+        type: 'text',
+        isValid: (val: string) => val.length > 0 && val.length <= 100
+      },
+      cancel: true,
+      persistent: true,
+      ok: {
+        label: 'Сохранить',
+        color: 'primary'
+      }
+    }).onOk((value: string) => {
+      resolve(value);
+    }).onCancel(() => {
+      resolve(undefined);
+    });
+  });
+
+  if (newTitle && newTitle.trim() && newTitle !== book.title) {
+    try {
+      // Получаем все метаданные
+      const allMetadata = getAllBooksMetadata();
+      const bookIndex = allMetadata.findIndex(b => b.id === book.id);
+
+      if (bookIndex !== -1) {
+        // Обновляем название
+        allMetadata[bookIndex] = {
+          ...allMetadata[bookIndex],
+          title: newTitle.trim()
+        } as BookMetadata;
+
+        // Сохраняем обновленные метаданные
+        saveBooksMetadata(allMetadata);
+
+        // Обновляем список книг
+        books.value = getAllBooksMetadata();
+
+        $q.notify({
+          type: 'positive',
+          message: `Книга переименована в "${newTitle.trim()}"`,
+          position: 'top'
+        });
+      }
+    } catch (error) {
+      console.error('Ошибка при переименовании книги:', error);
+      $q.notify({
+        type: 'negative',
+        message: 'Ошибка при переименовании книги',
+        position: 'top'
+      });
+    }
   }
 }
 </script>
