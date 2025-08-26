@@ -77,8 +77,13 @@ import { fontSize, theme } from 'src/composables/useReaderSettings';
 import { useBookManager } from 'src/composables/useBookManager';
 import { scrollToTop } from 'src/boot/utils';
 import { useSwipeNavigation } from 'src/composables/useSwipeNavigation';
+import { useOnlineStatus } from 'src/composables/useIsOnline';
+
+const { isBrowserTranslateActive } = useOnlineStatus();
 
 const { getBookContent } = useBookManager();
+
+
 
 watch(() => fontSize.value, () => {
   // При изменении размера шрифта очищаем старые кеши для текущей книги
@@ -89,7 +94,7 @@ watch(() => fontSize.value, () => {
 });
 
 const correctedFontSize = computed(() => {
-  return fontSize.value - (isTranslateCurrentPage.value ? 2 : 0);
+  return fontSize.value - (isTranslateCurrentPage.value ? 1 : 0);
 });
 
 interface Book {
@@ -237,11 +242,6 @@ async function updatePages() {
     return;
   }
 
-  // РЕАЛЬНАЯ пагинация основанная на размерах экрана
-  console.log(`=== REAL PAGINATION DEBUG ===`);
-  console.log(`Font size: ${fontSize.value}px`);
-  console.log('Original content length:', content.length);
-
   // Ждем, пока DOM элементы будут готовы
   await nextTick();
 
@@ -255,8 +255,6 @@ async function updatePages() {
       progress.value = Math.round(progressValue);
     }
   });
-
-
 
   pages.value = newPages;
   totalPages.value = newPages.length;
@@ -275,7 +273,16 @@ async function updatePages() {
 
 
 // тригерим смену контента чтобы браузер сработал на перевод
-watch(isTranslateCurrentPage, async () => {
+watch(isTranslateCurrentPage, async (newVal) => {
+  if (newVal && !isBrowserTranslateActive.value) {
+    $q.notify({
+      type: 'warning',
+      message: 'Чтобы это работало, включите "Перевести страницу" в браузере',
+      position: 'bottom',
+      timeout: 1000,
+    });
+    return;
+  }
   const pageNum = currentPage.value;
   currentPage.value = -1;
   await nextTick();
