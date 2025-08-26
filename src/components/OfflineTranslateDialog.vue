@@ -22,11 +22,11 @@
 
           <div v-else class="sentences-container">
             <div v-for="(sentence, index) in sentences" :key="index" class="sentence-pair">
-              <div class="text-section">
+              <div class="text-section" :style="{ fontSize: fontSize + 'px' }">
                 <div class="text-original" v-html="wrapContentToWords(sentence.original)"></div>
               </div>
 
-              <div class="text-section">
+              <div class="text-section" :style="{ fontSize: fontSize + 'px' }">
                 <div class="text-translation">{{ sentence.translation }}</div>
               </div>
 
@@ -52,6 +52,7 @@ import { ref, watch } from 'vue';
 import { translatePhrase, wrapContentToWords } from 'src/composables/useTranslate';
 import { useOnlineStatus } from 'src/composables/useIsOnline';
 import PagesPaginator from './PagesPaginator.vue';
+import { fontSize } from 'src/composables/useReaderSettings';
 
 const { isOnline } = useOnlineStatus();
 
