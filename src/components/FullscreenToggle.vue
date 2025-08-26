@@ -1,5 +1,5 @@
 <template>
-    <q-btn flat round dense :icon="isFullscreen ? 'fullscreen_exit' : 'fullscreen'" @click="toggleFullscreen"
+    <q-btn flat round dense :icon="isFullscreen ? 'fullscreen_exit' : 'fullscreen'" size="30" @click="toggleFullscreen"
         class="header-btn notranslate" translate="no">
         <q-tooltip>{{ isFullscreen ? 'Выйти из полноэкранного режима' : 'Полноэкранный режим' }}</q-tooltip>
     </q-btn>

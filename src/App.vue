@@ -30,6 +30,8 @@ document.addEventListener('click', (event) => {
           {
             icon: 'close',
             color: 'white',
+            class: 'notranslate',
+            translate: 'no',
             round: false,
             handler: () => {
               target.classList.remove('clickable-word-clicked');

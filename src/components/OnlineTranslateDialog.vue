@@ -1,8 +1,8 @@
 <template>
   <div class="translate-dialog-container">
     <!-- Прозрачная кнопка вверху справа -->
-    <q-btn flat round dense icon="translate" class="translate-btn" @click="showDialog = true" :style="{ opacity: 0.5 }"
-      :color="btnColor" />
+    <q-btn flat round dense icon="translate" class="translate-btn notranslate" @click="showDialog = true" translate="no"
+      :style="{ opacity: 0.5 }" :color="btnColor" />
 
     <!-- Maximize диалог -->
     <q-dialog v-model="showDialog" maximized transition-show="slide-up" transition-hide="slide-down"
