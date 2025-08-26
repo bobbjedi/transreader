@@ -25,7 +25,7 @@
           <q-list separator>
             <q-item v-for="book in books" :key="book.id" clickable @click="openBook(book)" class="q-py-sm">
               <q-item-section>
-                <q-item-label>{{ book.title }}</q-item-label>
+                <q-item-label class="notranslate" translate="no">{{ book.title }}</q-item-label>
                 <q-item-label caption>
                   {{ book.pages }} страниц • {{ formatFileSize(book.size) }}
                 </q-item-label>

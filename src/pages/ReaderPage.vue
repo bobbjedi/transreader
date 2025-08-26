@@ -21,21 +21,15 @@
       </div>
 
       <!-- Компонент перевода -->
-      <OfflineTranslateDialog :page-text="currentPageContent" />
-      <OnlineTranslateDialog :page-text="currentPageContent" />
+      <OfflineTranslateDialog :page-text="currentPageContent" :current-page="currentPage" :total-pages="totalPages"
+        @prev-page="prevPage" @next-page="nextPage" />
 
-      <!-- Индикатор страницы -->
-      <div class="page-indicator">
-        <div class="page-nav-left" @click="prevPage">
-          <q-icon name="chevron_left" class="nav-icon" />
-        </div>
-        <div class="page-info">
-          {{ currentPage + 1 }} / {{ totalPages }}
-        </div>
-        <div class="page-nav-right" @click="nextPage">
-          <q-icon name="chevron_right" class="nav-icon" />
-        </div>
-      </div>
+      <OnlineTranslateDialog :page-text="currentPageContent" :current-page="currentPage" :total-pages="totalPages"
+        @prev-page="prevPage" @next-page="nextPage" />
+
+
+      <PagesPaginator :current-page="currentPage" :total-pages="totalPages" @prev-page="prevPage"
+        @next-page="nextPage" />
 
       <!-- Панель настроек -->
       <ReaderSettings :show="showSettings" @close="showSettings = false"
@@ -71,10 +65,11 @@ import { usePageCache } from 'src/composables/usePageCache';
 import OfflineTranslateDialog from 'src/components/OfflineTranslateDialog.vue';
 import OnlineTranslateDialog from 'src/components/OnlineTranslateDialog.vue';
 import ReaderSettings from 'src/components/ReaderSettings.vue';
+import PagesPaginator from 'src/components/PagesPaginator.vue';
 import { wrapContentToWords } from 'src/composables/useTranslate';
 import { fontSize, theme } from 'src/composables/useReaderSettings';
 import { useBookManager } from 'src/composables/useBookManager';
-
+import { scrollToTop } from 'src/boot/utils';
 
 const { getBookContent } = useBookManager();
 
@@ -126,6 +121,9 @@ onMounted(() => {
   setViewportHeight();
   window.addEventListener('resize', setViewportHeight);
   window.addEventListener('orientationchange', setViewportHeight);
+
+  // Добавляем обработчик кнопок громкости для навигации
+  window.addEventListener('keydown', handleVolumeKeys);
 });
 
 // Функция для установки правильной высоты viewport
@@ -137,10 +135,30 @@ function setViewportHeight() {
   }
 }
 
+// Обработчик кнопок громкости для навигации по страницам
+function handleVolumeKeys(event: KeyboardEvent) {
+  // Поддержка различных кодов клавиш громкости
+  const volumeDownCodes = ['AudioVolumeDown', 'VolumeDown']; // Уменьшение громкости
+  const volumeUpCodes = ['AudioVolumeUp', 'VolumeUp'];       // Увеличение громкости
+
+  if (volumeDownCodes.includes(event.code) || volumeUpCodes.includes(event.code)) {
+    event.preventDefault(); // Предотвращаем изменение громкости
+
+    if (volumeDownCodes.includes(event.code)) {
+      // Volume Down - предыдущая страница
+      prevPage();
+    } else if (volumeUpCodes.includes(event.code)) {
+      // Volume Up - следующая страница
+      nextPage();
+    }
+  }
+}
+
 // Очищаем обработчики событий при размонтировании
 onUnmounted(() => {
   window.removeEventListener('resize', setViewportHeight);
   window.removeEventListener('orientationchange', setViewportHeight);
+  window.removeEventListener('keydown', handleVolumeKeys);
 });
 
 
@@ -272,6 +290,7 @@ async function updatePages(src: string) {
 }
 
 function nextPage() {
+  scrollToTop('.translate-card');
   if (currentPage.value < totalPages.value - 1) {
     currentPage.value++;
     savePosition();
@@ -279,6 +298,7 @@ function nextPage() {
 }
 
 function prevPage() {
+  scrollToTop('.translate-card');
   if (currentPage.value > 0) {
     currentPage.value--;
     savePosition();
@@ -441,74 +461,6 @@ function handleTouchEnd(event: TouchEvent) {
   color: red !important;
   background-color: rgba(0, 123, 255, 0.1) !important;
   text-decoration: underline !important;
-}
-
-.page-indicator {
-  position: relative;
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  background: rgba(0, 0, 0, 0.05);
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  font-size: 14px;
-  color: var(--text-secondary);
-  height: 50px;
-}
-
-.page-info {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  font-weight: 500;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.page-nav-left,
-.page-nav-right {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 50%;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  display: flex;
-  align-items: center;
-}
-
-.page-nav-left {
-  left: 0;
-  justify-content: flex-start;
-  padding-left: 16px;
-}
-
-.page-nav-right {
-  right: 0;
-  justify-content: flex-end;
-  padding-right: 16px;
-}
-
-.nav-icon {
-  opacity: 0.6;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-}
-
-.page-nav-left:hover .nav-icon,
-.page-nav-right:hover .nav-icon {
-  opacity: 1;
-}
-
-.page-nav-left:hover,
-.page-nav-right:hover {
-  background: rgba(0, 0, 0, 0.1);
-}
-
-.page-nav-left:active,
-.page-nav-right:active {
-  background: rgba(0, 0, 0, 0.2);
 }
 
 .full-height {

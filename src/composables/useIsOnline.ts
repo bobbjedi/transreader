@@ -26,8 +26,6 @@ export function useOnlineStatus() {
       || document.documentElement.classList.contains('translated-rtl')
       || document.querySelector('iframe.goog-te-banner-frame') !== null
 
-    console.log('isActivated:', isActivated);
-
     isBrowserTranslateActive.value = isActivated && isOnline.value;
   }
 

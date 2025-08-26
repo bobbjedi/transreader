@@ -1,1 +1,59 @@
 // app global css in SCSS form
+
+
+.translate-btn {
+    position: fixed;
+    bottom: 50px;
+    right: 8px;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    transition: opacity 0.3s ease;
+  }
+  
+  .translate-btn:hover {
+    opacity: 0.8 !important;
+  }
+  
+  .sentences-container {
+    /* max-height: 90vh; */
+    overflow-y: auto;
+  }
+  
+  .sentence-pair {
+    margin-bottom: 2px;
+  }
+  
+  .sentence-pair:last-child {
+    margin-bottom: 0;
+  }
+  
+  .text-section {
+    margin-bottom: 3px;
+  }
+  
+  .text-label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--q-primary);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .text-original,
+  .text-translation {
+    background: var(--q-bg-color);
+    padding: 0 16px;
+    border-radius: 8px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-left-color: var(--q-primary);
+  }
+  
+  .text-translation {
+    border-left-color: var(--q-secondary);
+  }
