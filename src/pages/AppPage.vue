@@ -1,64 +1,83 @@
 <template>
-    <q-page class="flex column items-center justify-center q-pa-md">
-        <div class="text-h4 q-mb-lg text-center">
-            📚 Мои книги
+    <div class="app-page">
+        <!-- Hero секция -->
+        <div class="hero-section">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">📚 Мои книги</h1>
+                    <p class="hero-subtitle">Загружайте книги в форматах FB2 и TXT для изучения языков</p>
+                </div>
+            </div>
         </div>
 
-        <div class="column q-gutter-md" style="max-width: 400px; width: 100%;">
-            <!-- Выбор файла -->
-            <q-card class="q-pa-md">
-                <q-card-section>
-                    <div class="text-h6 q-mb-md">Выберите книгу</div>
-                    <q-file v-model="selectedFile" label="Выберите файл (FB2, TXT)" accept=".fb2,.txt" filled
-                        :loading="isLoading" @update:model-value="handleFileSelect">
-                        <template v-slot:prepend>
-                            <q-icon name="attach_file" class="notranslate" translate="no" />
-                        </template>
-                    </q-file>
-                </q-card-section>
-            </q-card>
+        <!-- Основной контент -->
+        <div class="main-content">
+            <div class="container">
+                <!-- Загрузка файла -->
+                <div class="upload-section">
+                    <div class="upload-card">
+                        <div class="upload-icon">
+                            <q-icon name="cloud_upload" size="48px" />
+                        </div>
+                        <h3 class="upload-title">Загрузить новую книгу</h3>
+                        <p class="upload-description">Поддерживаются форматы FB2 и TXT</p>
 
-            <!-- Список загруженных книг -->
-            <q-card v-if="books.length > 0" class="q-pa-md">
-                <q-card-section>
-                    <div class="text-h6 q-mb-md">Мои книги</div>
-                    <q-list separator>
-                        <q-item v-for="book in books" :key="book.id" clickable @click="openBook(book)" class="q-py-sm">
-                            <q-item-section>
-                                <q-item-label class="notranslate" translate="no">{{ book.title }}</q-item-label>
-                                <q-item-label caption>
-                                    {{ book.pages }} страниц • {{ formatFileSize(book.size) }}
-                                </q-item-label>
-                            </q-item-section>
-                            <q-item-section side>
+                        <q-file v-model="selectedFile" label="Выберите файл" accept=".fb2,.txt" :loading="isLoading"
+                            @update:model-value="handleFileSelect" class="upload-input" outlined>
+                            <template v-slot:prepend>
+                                <q-icon name="attach_file" />
+                            </template>
+                        </q-file>
+                    </div>
+                </div>
+
+                <!-- Список книг -->
+                <div v-if="books.length > 0" class="books-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Загруженные книги</h2>
+                        <p class="section-subtitle">{{ books.length }} {{ books.length === 1 ? 'книга' : books.length <
+                                5 ? 'книги' : 'книг' }}</p>
+                    </div>
+
+                    <div class="books-grid">
+                        <div v-for="book in books" :key="book.id" class="book-card" @click="openBook(book)">
+                            <div class="book-content">
+                                <div class="book-icon">
+                                    <q-icon name="book" size="32px" />
+                                </div>
+                                <h4 class="book-title">{{ book.title }}</h4>
+                                <div class="book-meta">
+                                    <span class="book-pages">{{ book.pages }} страниц</span>
+                                    <span class="book-size">{{ formatFileSize(book.size) }}</span>
+                                </div>
+                            </div>
+                            <div class="book-actions">
                                 <q-btn flat round dense icon="edit" color="primary" @click.stop="handleRenameBook(book)"
-                                    class="q-mr-sm notranslate" translate="no">
-                                    <q-tooltip>Переименовать книгу</q-tooltip>
+                                    class="action-btn">
+                                    <q-tooltip>Переименовать</q-tooltip>
                                 </q-btn>
                                 <q-btn flat round dense icon="delete" color="negative"
-                                    @click.stop="handleDeleteBook(book.id)" class="q-mr-sm notranslate" translate="no">
-                                    <q-tooltip>Удалить книгу</q-tooltip>
+                                    @click.stop="handleDeleteBook(book.id)" class="action-btn">
+                                    <q-tooltip>Удалить</q-tooltip>
                                 </q-btn>
-                                <q-icon name="chevron_right" class="notranslate" translate="no" />
-                            </q-item-section>
-                        </q-item>
-                    </q-list>
-                </q-card-section>
-            </q-card>
-
-            <!-- Пустое состояние -->
-            <q-card v-if="books.length === 0" class="q-pa-md text-center">
-                <q-card-section>
-                    <q-icon name="library_books" size="60px" color="grey-5" class="q-mb-md" />
-                    <div class="text-h6 q-mb-sm text-grey-7">Пока что пусто</div>
-                    <div class="text-body2 text-grey-6">
-                        Загрузите первую книгу, чтобы начать изучение языка
+                            </div>
+                        </div>
                     </div>
-                </q-card-section>
-            </q-card>
+                </div>
 
+                <!-- Пустое состояние -->
+                <div v-else class="empty-state">
+                    <div class="empty-icon">
+                        <q-icon name="library_books" size="80px" />
+                    </div>
+                    <h3 class="empty-title">Библиотека пуста</h3>
+                    <p class="empty-description">
+                        Загрузите первую книгу в поддерживаемом формате, чтобы начать изучение языков
+                    </p>
+                </div>
+            </div>
         </div>
-    </q-page>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -343,5 +362,333 @@ async function handleRenameBook(book: BookMetadata) {
 </script>
 
 <style scoped>
-/* Стили для страницы приложения */
+.app-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Hero секция */
+.hero-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 40px 0;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #1e293b;
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    color: #475569;
+    margin: 0;
+}
+
+/* Основной контент */
+.main-content {
+    padding: 60px 0;
+}
+
+/* Секция загрузки */
+.upload-section {
+    margin-bottom: 60px;
+}
+
+.upload-card {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    max-width: 500px;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+}
+
+.upload-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.upload-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    color: white;
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+}
+
+.upload-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1e293b;
+}
+
+.upload-description {
+    color: #64748b;
+    margin-bottom: 32px;
+    font-size: 1rem;
+}
+
+.upload-input {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+/* Секция книг */
+.books-section {
+    margin-bottom: 40px;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1e293b;
+}
+
+.section-subtitle {
+    color: #64748b;
+    margin: 0;
+}
+
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.book-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    border-color: #3b82f6;
+}
+
+.book-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.book-card:hover::before {
+    opacity: 1;
+}
+
+.book-content {
+    margin-bottom: 16px;
+}
+
+.book-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #059669, #10b981);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    color: white;
+}
+
+.book-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1e293b;
+    line-height: 1.4;
+}
+
+.book-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.book-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-top: 16px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.action-btn {
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.book-card:hover .action-btn {
+    opacity: 1;
+}
+
+/* Пустое состояние */
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.empty-icon {
+    width: 120px;
+    height: 120px;
+    background: #f1f5f9;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 32px;
+    color: #94a3b8;
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #475569;
+}
+
+.empty-description {
+    color: #64748b;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Мобильная адаптивность */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .upload-card {
+        padding: 24px;
+        margin: 0 16px;
+    }
+
+    .books-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .main-content {
+        padding: 40px 0;
+    }
+
+    .upload-section {
+        margin-bottom: 40px;
+    }
+}
+
+/* Темная тема */
+.body--dark .app-page {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+}
+
+.body--dark .hero-section {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+}
+
+.body--dark .hero-title {
+    color: #f1f5f9;
+}
+
+.body--dark .hero-subtitle {
+    color: #cbd5e1;
+}
+
+.body--dark .upload-card {
+    background: #1e293b;
+    border-color: #334155;
+    color: #f1f5f9;
+}
+
+.body--dark .upload-title {
+    color: #f8fafc;
+}
+
+.body--dark .upload-description {
+    color: #cbd5e1;
+}
+
+.body--dark .section-title {
+    color: #f8fafc;
+}
+
+.body--dark .section-subtitle {
+    color: #cbd5e1;
+}
+
+.body--dark .book-card {
+    background: #1e293b;
+    border-color: #334155;
+    color: #f1f5f9;
+}
+
+.body--dark .book-card:hover {
+    background: #334155;
+    border-color: #3b82f6;
+}
+
+.body--dark .book-title {
+    color: #f8fafc;
+}
+
+.body--dark .book-meta {
+    color: #cbd5e1;
+}
+
+.body--dark .book-actions {
+    border-color: #334155;
+}
+
+.body--dark .empty-icon {
+    background: #334155;
+    color: #64748b;
+}
+
+.body--dark .empty-title {
+    color: #cbd5e1;
+}
+
+.body--dark .empty-description {
+    color: #94a3b8;
+}
 </style>

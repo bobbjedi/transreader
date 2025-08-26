@@ -304,7 +304,7 @@ function prevPage() {
 
 function goBack() {
   savePosition();
-  void router.push('/');
+  void router.push('/app');
 }
 </script>
 
