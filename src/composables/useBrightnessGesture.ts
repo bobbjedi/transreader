@@ -40,7 +40,7 @@ export function useBrightnessGesture() {
         if (!touch) return false;
 
         const screenWidth = window.innerWidth;
-        
+
         // Проверяем, что мы в зоне яркости
         if (!isInBrightnessZone(touch.clientX, screenWidth)) {
             return false;
@@ -48,7 +48,7 @@ export function useBrightnessGesture() {
 
         // Проверяем, было ли движение
         const deltaY = Math.abs(brightnessStartY - touch.clientY);
-        
+
         // Если движение достаточно большое, активируем жест
         if (!isBrightnessAdjusting.value && deltaY > MIN_MOVEMENT_THRESHOLD) {
             isBrightnessAdjusting.value = true;
