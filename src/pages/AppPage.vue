@@ -16,18 +16,30 @@
                 <!-- Загрузка файла -->
                 <div class="upload-section">
                     <div class="upload-card">
-                        <div class="upload-icon">
-                            <q-icon name="cloud_upload" size="48px" />
+                        <div class="upload-content">
+                            <div class="upload-info">
+                                <q-icon name="cloud_upload" size="24px" color="primary" />
+                                <div>
+                                    <div class="upload-title">Загрузить книгу</div>
+                                    <div class="upload-description">FB2, TXT файлы</div>
+                                </div>
+                            </div>
+                            
+                            <q-file 
+                                v-model="selectedFile" 
+                                label="Выберите файл" 
+                                accept=".fb2,.txt" 
+                                :loading="isLoading" 
+                                @update:model-value="handleFileSelect"
+                                class="upload-input"
+                                outlined
+                                dense
+                            >
+                                <template v-slot:prepend>
+                                    <q-icon name="attach_file" />
+                                </template>
+                            </q-file>
                         </div>
-                        <h3 class="upload-title">Загрузить новую книгу</h3>
-                        <p class="upload-description">Поддерживаются форматы FB2 и TXT</p>
-
-                        <q-file v-model="selectedFile" label="Выберите файл" accept=".fb2,.txt" :loading="isLoading"
-                            @update:model-value="handleFileSelect" class="upload-input" outlined>
-                            <template v-slot:prepend>
-                                <q-icon name="attach_file" />
-                            </template>
-                        </q-file>
                     </div>
                 </div>
 
@@ -39,30 +51,37 @@
                             5 ? 'книги' : 'книг' }}</p>
                     </div>
 
-                    <div class="books-grid">
-                        <div v-for="book in books" :key="book.id" class="book-card" @click="openBook(book)">
-                            <div class="book-content">
-                                <div class="book-icon">
-                                    <q-icon name="book" size="32px" />
+                    <q-list class="books-list" bordered separator>
+                        <q-item v-for="book in books" :key="book.id" clickable @click="openBook(book)"
+                            class="book-item">
+                            <q-item-section avatar>
+                                <q-avatar color="primary" text-color="white" size="40px">
+                                    <q-icon name="book" />
+                                </q-avatar>
+                            </q-item-section>
+
+                            <q-item-section>
+                                <q-item-label class="book-title">{{ book.title }}</q-item-label>
+                                <q-item-label caption class="book-meta">
+                                    {{ book.pages }} страниц • {{ formatFileSize(book.size) }}
+                                </q-item-label>
+                            </q-item-section>
+
+                            <q-item-section side>
+                                <div class="book-actions">
+                                    <q-btn flat round dense icon="edit" color="primary"
+                                        @click.stop="handleRenameBook(book)" size="sm">
+                                        <q-tooltip>Переименовать</q-tooltip>
+                                    </q-btn>
+                                    <q-btn flat round dense icon="delete" color="negative"
+                                        @click.stop="handleDeleteBook(book.id)" size="sm">
+                                        <q-tooltip>Удалить</q-tooltip>
+                                    </q-btn>
+                                    <q-icon name="chevron_right" color="grey-5" />
                                 </div>
-                                <h4 class="book-title">{{ book.title }}</h4>
-                                <div class="book-meta">
-                                    <span class="book-pages">{{ book.pages }} страниц</span>
-                                    <span class="book-size">{{ formatFileSize(book.size) }}</span>
-                                </div>
-                            </div>
-                            <div class="book-actions">
-                                <q-btn flat round dense icon="edit" color="primary" @click.stop="handleRenameBook(book)"
-                                    class="action-btn">
-                                    <q-tooltip>Переименовать</q-tooltip>
-                                </q-btn>
-                                <q-btn flat round dense icon="delete" color="negative"
-                                    @click.stop="handleDeleteBook(book.id)" class="action-btn">
-                                    <q-tooltip>Удалить</q-tooltip>
-                                </q-btn>
-                            </div>
-                        </div>
-                    </div>
+                            </q-item-section>
+                        </q-item>
+                    </q-list>
                 </div>
 
                 <!-- Пустое состояние -->
@@ -400,55 +419,47 @@ async function handleRenameBook(book: BookMetadata) {
 
 /* Секция загрузки */
 .upload-section {
-    margin-bottom: 60px;
+  margin-bottom: 40px;
 }
 
 .upload-card {
-    background: white;
-    border-radius: 16px;
-    padding: 40px;
-    text-align: center;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    max-width: 500px;
-    margin: 0 auto;
-    transition: all 0.3s ease;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.upload-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+.upload-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
-.upload-icon {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 24px;
-    color: white;
-    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+.upload-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
 }
 
 .upload-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #1e293b;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 2px;
 }
 
 .upload-description {
-    color: #64748b;
-    margin-bottom: 32px;
-    font-size: 1rem;
+  color: #64748b;
+  font-size: 0.85rem;
 }
 
 .upload-input {
-    max-width: 300px;
-    margin: 0 auto;
+  flex: 1;
+  max-width: 280px;
 }
 
 /* Секция книг */
@@ -473,91 +484,37 @@ async function handleRenameBook(book: BookMetadata) {
     margin: 0;
 }
 
-.books-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 24px;
-}
-
-.book-card {
+.books-list {
     background: white;
     border-radius: 12px;
-    padding: 20px;
-    border: 1px solid #e2e8f0;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    max-width: 800px;
+    margin: 0 auto;
 }
 
-.book-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-    border-color: #3b82f6;
+.book-item {
+    transition: all 0.2s ease;
 }
 
-.book-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.book-card:hover::before {
-    opacity: 1;
-}
-
-.book-content {
-    margin-bottom: 16px;
-}
-
-.book-icon {
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, #059669, #10b981);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 16px;
-    color: white;
+.book-item:hover {
+    background: #f8fafc;
 }
 
 .book-title {
-    font-size: 1.2rem;
     font-weight: 600;
-    margin-bottom: 8px;
     color: #1e293b;
-    line-height: 1.4;
+    line-height: 1.3;
 }
 
 .book-meta {
-    display: flex;
-    gap: 16px;
-    font-size: 0.9rem;
-    color: #64748b;
+    color: #64748b !important;
+    font-size: 0.85rem;
 }
 
 .book-actions {
     display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-    padding-top: 16px;
-    border-top: 1px solid #f1f5f9;
-}
-
-.action-btn {
-    opacity: 0.7;
-    transition: opacity 0.2s ease;
-}
-
-.book-card:hover .action-btn {
-    opacity: 1;
+    align-items: center;
+    gap: 4px;
 }
 
 /* Пустое состояние */
@@ -599,13 +556,22 @@ async function handleRenameBook(book: BookMetadata) {
     }
 
     .upload-card {
-        padding: 24px;
+        padding: 16px;
         margin: 0 16px;
     }
-
-    .books-grid {
-        grid-template-columns: 1fr;
+    
+    .upload-content {
+        flex-direction: column;
         gap: 16px;
+    }
+    
+    .upload-info {
+        justify-content: center;
+    }
+
+    .books-list {
+        margin: 0 16px;
+        border-radius: 8px;
     }
 
     .main-content {
@@ -656,15 +622,13 @@ async function handleRenameBook(book: BookMetadata) {
     color: #cbd5e1;
 }
 
-.body--dark .book-card {
+.body--dark .books-list {
     background: #1e293b;
     border-color: #334155;
-    color: #f1f5f9;
 }
 
-.body--dark .book-card:hover {
+.body--dark .book-item:hover {
     background: #334155;
-    border-color: #3b82f6;
 }
 
 .body--dark .book-title {
@@ -672,11 +636,7 @@ async function handleRenameBook(book: BookMetadata) {
 }
 
 .body--dark .book-meta {
-    color: #cbd5e1;
-}
-
-.body--dark .book-actions {
-    border-color: #334155;
+    color: #cbd5e1 !important;
 }
 
 .body--dark .empty-icon {
