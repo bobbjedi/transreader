@@ -36,7 +36,7 @@
                     <div class="section-header">
                         <h2 class="section-title">Загруженные книги</h2>
                         <p class="section-subtitle">{{ books.length }} {{ books.length === 1 ? 'книга' : books.length <
-                                5 ? 'книги' : 'книг' }}</p>
+                            5 ? 'книги' : 'книг' }}</p>
                     </div>
 
                     <div class="books-grid">

@@ -14,15 +14,19 @@
           <div class="hero-features">
             <div class="hero-feature">
               <q-icon name="touch_app" size="18px" />
-              <span class="q-ml-sm">Клик по словам</span>
+              <span class="q-ml-sm">Перевод кликом по слову</span>
             </div>
             <div class="hero-feature">
               <q-icon name="compare" size="18px" />
-              <span class="q-ml-sm">Построчный диалог перевода</span>
+              <span class="q-ml-sm">Перевод по предложениям</span>
+            </div>
+            <div class="hero-feature">
+              <q-icon name="list" size="18px" />
+              <span class="q-ml-sm">Автоперевод страницы</span>
             </div>
             <div class="hero-feature">
               <q-icon name="translate" size="18px" />
-              <span class="q-ml-sm">Перевод через браузер</span>
+              <span class="q-ml-sm">Перевод браузером</span>
             </div>
             <div class="hero-feature">
               <q-icon name="offline_bolt" size="18px" />
@@ -31,7 +35,7 @@
 
             <div class="hero-feature">
               <q-icon name="compare" size="18px" />
-              <span class="q-ml-sm">Загрузка своих книг FB2, TXT</span>
+              <span class="q-ml-sm">Загрузка книг FB2, TXT</span>
             </div>
           </div>
 
@@ -46,6 +50,9 @@
 
     <!-- Способы перевода -->
     <div class="features-section">
+      <div class="section-header">
+        <h2 class="section-title">Сценарии использования</h2>
+      </div>
       <div class="container">
         <div class="features-grid">
           <!-- Перевод слов -->
@@ -58,9 +65,8 @@
             </div>
             <h3 class="feature-title">Перевод слов</h3>
             <p class="feature-description">
-              Клик по слову показывает перевод EN->RU из локального словаря
+              Читаем текст на иностранном языке, кликаем по неизвестному слову - показываются варианты перевода
             </p>
-
           </div>
 
           <!-- Автоперевод страницы -->
@@ -73,9 +79,9 @@
             </div>
             <h3 class="feature-title">Автоперевод</h3>
             <p class="feature-description">
-              Автоперевод страницы через функцию браузера "Перевести страницу"
+              Автоперевод страницы - страницы переводятся автоматически. (Для этого нужно включить в браузере
+              "Перевести страницу")
             </p>
-
           </div>
 
           <!-- Построчный перевод -->
@@ -88,7 +94,8 @@
             </div>
             <h3 class="feature-title">Построчный перевод</h3>
             <p class="feature-description">
-              Диалог с построчным переводом текущей страницы
+              Диалог с построчным переводом текущей страницы - после каждого предложения будет его перевод.
+              Также работает тап по слову.
             </p>
 
           </div>
@@ -107,6 +114,13 @@
             </div>
             <h4 class="additional-title">Мобильная оптимизация</h4>
             <p class="additional-description">Свайпы для навигации, адаптивная верстка</p>
+          </div>
+          <div class="additional-card">
+            <div class="additional-icon">
+              <q-icon name="fullscreen" size="28px" />
+            </div>
+            <h4 class="additional-title">Фулл-скрин</h4>
+            <p class="additional-description">Разворачивание страницы на весь экран. Максимум полезной площади</p>
           </div>
 
           <div class="additional-card">
@@ -333,7 +347,6 @@ function openGithub() {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 16px;
-  color: #1a1a1a;
 }
 
 .section-subtitle {
