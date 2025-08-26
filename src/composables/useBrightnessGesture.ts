@@ -13,6 +13,7 @@ export function useBrightnessGesture() {
     const MIN_BRIGHTNESS = 20;
     const MAX_BRIGHTNESS = 150;
     const BRIGHTNESS_SENSITIVITY = 0.5; // Чувствительность жеста
+    const MIN_MOVEMENT_THRESHOLD = 10; // Минимальное движение для активации
 
     const isInBrightnessZone = (x: number, screenWidth: number): boolean => {
         return x > screenWidth - BRIGHTNESS_ZONE_WIDTH;
@@ -25,36 +26,49 @@ export function useBrightnessGesture() {
         const screenWidth = window.innerWidth;
 
         if (isInBrightnessZone(touch.clientX, screenWidth)) {
-            isBrightnessAdjusting.value = true;
+            // Запоминаем начальную позицию, но не активируем сразу
             brightnessStartY = touch.clientY;
             brightnessStartValue = brightness.value;
-            showBrightnessIndicator.value = true;
-
-            // Предотвращаем другие события
-            event.preventDefault();
-            return true;
+            return false; // Не блокируем другие события
         }
 
         return false;
     };
 
     const handleBrightnessTouchMove = (event: TouchEvent) => {
-        if (!isBrightnessAdjusting.value) return false;
-
         const touch = event.touches[0];
         if (!touch) return false;
 
-        const deltaY = brightnessStartY - touch.clientY; // Инвертируем: вверх = ярче
-        const brightnessChange = deltaY * BRIGHTNESS_SENSITIVITY;
-        const newBrightness = Math.max(
-            MIN_BRIGHTNESS,
-            Math.min(MAX_BRIGHTNESS, brightnessStartValue + brightnessChange)
-        );
+        const screenWidth = window.innerWidth;
+        
+        // Проверяем, что мы в зоне яркости
+        if (!isInBrightnessZone(touch.clientX, screenWidth)) {
+            return false;
+        }
 
-        brightness.value = Math.round(newBrightness);
+        // Проверяем, было ли движение
+        const deltaY = Math.abs(brightnessStartY - touch.clientY);
+        
+        // Если движение достаточно большое, активируем жест
+        if (!isBrightnessAdjusting.value && deltaY > MIN_MOVEMENT_THRESHOLD) {
+            isBrightnessAdjusting.value = true;
+            showBrightnessIndicator.value = true;
+        }
 
-        event.preventDefault();
-        return true;
+        // Если жест активен, обрабатываем изменение яркости
+        if (isBrightnessAdjusting.value) {
+            const brightnessChange = (brightnessStartY - touch.clientY) * BRIGHTNESS_SENSITIVITY;
+            const newBrightness = Math.max(
+                MIN_BRIGHTNESS,
+                Math.min(MAX_BRIGHTNESS, brightnessStartValue + brightnessChange)
+            );
+
+            brightness.value = Math.round(newBrightness);
+            event.preventDefault();
+            return true;
+        }
+
+        return false;
     };
 
     const handleBrightnessTouchEnd = () => {
