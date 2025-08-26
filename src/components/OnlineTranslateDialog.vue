@@ -1,8 +1,8 @@
 <template>
-  <div class="translate-dialog-container">
+  <div class="translate-dialog-container" v-if="isOnline">
     <!-- Прозрачная кнопка вверху справа -->
-    <q-btn flat round dense icon="translate" class="translate-btn" @click="showDialog = true"
-      :style="{ opacity: 0.3 }" />
+    <q-btn flat round dense icon="translate" class="translate-btn" @click="showDialog = true" :style="{ opacity: 0.3 }"
+      color="positive" />
 
 
     <!-- Maximize диалог -->
@@ -10,7 +10,15 @@
       class="translate-dialog">
       <q-card class="translate-card">
         <q-card-section class="translate-header">
-          <div class="text-h6">Перевод
+          <div class="text-bold notranslate flex items-center justify-between" translate="no">
+            <span :class="{
+              'text-negative': !isBrowserTranslateActive,
+              'text-positive': isBrowserTranslateActive
+            }">{{
+              isBrowserTranslateActive
+                ? 'Браузерный перевод активен'
+                : 'Для работы включите браузерный перевод'
+            }}</span>
             <q-btn flat round dense icon="close" @click="showDialog = false" class="close-btn" />
           </div>
         </q-card-section>
@@ -22,12 +30,12 @@
 
           <div v-else class="sentences-container">
             <div v-for="(sentence, index) in sentences" :key="index" class="sentence-pair">
-              <div class="text-section">
+              <div class="text-section notranslate" translate="no">
                 <div class="text-original" v-html="wrapContentToWords(sentence.original)"></div>
               </div>
 
               <div class="text-section">
-                <div class="text-translation">{{ sentence.translation }}</div>
+                <div class="text-translation">{{ sentence.original }}</div>
               </div>
 
               <q-separator v-if="index < sentences.length - 1" class="q-my-md" />
@@ -47,6 +55,9 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { translatePhrase, wrapContentToWords } from 'src/composables/useTranslate';
+import { useOnlineStatus } from 'src/composables/useIsOnline';
+
+const { isOnline, isBrowserTranslateActive } = useOnlineStatus();
 
 interface Props {
   pageText: string;

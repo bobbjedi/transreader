@@ -10,7 +10,7 @@
       </div>
 
       <!-- Контент страницы -->
-      <div class="reader-content" ref="contentRef">
+      <div class="reader-content notranslate" ref="contentRef" translate="no">
 
         <!-- Содержимое страницы -->
         <div v-if="!isLoading" class="page-content" id="main-reader-content" :style="{ fontSize: fontSize + 'px' }"
@@ -21,7 +21,8 @@
       </div>
 
       <!-- Компонент перевода -->
-      <TranslateDialog :page-text="currentPageContent" />
+      <OfflineTranslateDialog :page-text="currentPageContent" />
+      <OnlineTranslateDialog :page-text="currentPageContent" />
 
       <!-- Индикатор страницы -->
       <div class="page-indicator">
@@ -67,7 +68,8 @@ import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { useTextPages } from 'src/composables/useTextPages';
 import { usePageCache } from 'src/composables/usePageCache';
-import TranslateDialog from 'src/components/TranslateDialog.vue';
+import OfflineTranslateDialog from 'src/components/OfflineTranslateDialog.vue';
+import OnlineTranslateDialog from 'src/components/OnlineTranslateDialog.vue';
 import ReaderSettings from 'src/components/ReaderSettings.vue';
 import { wrapContentToWords } from 'src/composables/useTranslate';
 import { fontSize, theme } from 'src/composables/useReaderSettings';

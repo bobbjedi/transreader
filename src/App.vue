@@ -5,8 +5,11 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { wordListTranslates } from './composables/useTranslate';
+import { useOnlineStatus } from './composables/useIsOnline';
 
 const $q = useQuasar();
+
+const { isOnline } = useOnlineStatus();
 
 document.addEventListener('click', (event) => {
   const target = event.target;
@@ -14,7 +17,9 @@ document.addEventListener('click', (event) => {
     if (target.classList.contains('clickable-word')) {
       $q.notify({
         html: true,
-        message: `<div><center> <b>${target.textContent?.toUpperCase()}</b></center></div>
+        message: `
+        <div><center> <b class="notranslate" translate="no">${target.textContent?.toUpperCase()}</b></center></div>
+        <div display="${isOnline.value ? 'block' : 'none'}"><center> Browser translate: <i>${target.textContent?.toUpperCase()}</i></center></div>
         <div><i>${wordListTranslates(target.textContent!).join(' | ')}</i></div>
         `,
         position: 'top',
