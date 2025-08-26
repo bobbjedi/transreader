@@ -14,28 +14,32 @@
       </div>
 
       <!-- Контент страницы -->
-      <div class="reader-content notranslate" ref="contentRef" translate="no">
+      <div class="reader-content" ref="contentRef" :class="{ 'notranslate': !isTranslateCurrentPage }"
+        :translate="!isTranslateCurrentPage ? 'no' : 'yes'">
 
         <!-- Содержимое страницы -->
-        <div v-if="!isLoading" class="page-content" id="main-reader-content" :style="{ fontSize: fontSize + 'px' }"
-          v-html="wrappedPageContent">
+        <div v-if="!isLoading" class="page-content" id="main-reader-content"
+          :style="{ fontSize: correctedFontSize + 'px' }" v-html="wrappedPageContent">
         </div>
-        <div class="page-content" id="reader-measurer" :style="{ fontSize: fontSize + 'px' }">
+        <div class="page-content" id="reader-measurer" :style="{ fontSize: correctedFontSize + 'px' }">
         </div>
       </div>
 
       <OnlineTranslateDialog :page-text="currentPageContent" :current-page="currentPage" :total-pages="totalPages"
         @prev-page="prevPage" @next-page="nextPage" />
+
       <div class="fullscreen-toggle-container">
         <FullscreenToggle />
       </div>
+
+      <q-btn flat round dense icon="translate" @click="isTranslateCurrentPage = !isTranslateCurrentPage"
+        class="translate-current-page-btn notranslate" translate="no" :class="{ 'active': isTranslateCurrentPage }" />
 
       <PagesPaginator :current-page="currentPage" :total-pages="totalPages" @prev-page="prevPage"
         @next-page="nextPage" />
 
       <!-- Панель настроек -->
-      <ReaderSettings :show="showSettings" @close="showSettings = false"
-        @font-size-changed="void updatePages('fontSize changed')" />
+      <ReaderSettings :show="showSettings" @close="showSettings = false" @font-size-changed="void updatePages()" />
     </div>
 
     <!-- Полноэкранный прелоадер пересчета страниц -->
@@ -81,7 +85,11 @@ watch(() => fontSize.value, () => {
   if (book.value) {
     clearBookCache(book.value.id);
   }
-  void updatePages('fontSize changed');
+  void updatePages();
+});
+
+const correctedFontSize = computed(() => {
+  return fontSize.value - (isTranslateCurrentPage.value ? 2 : 0);
 });
 
 interface Book {
@@ -92,8 +100,6 @@ interface Book {
   fileName: string;
   addedAt: number;
 }
-
-
 
 const route = useRoute();
 const router = useRouter();
@@ -109,6 +115,7 @@ const totalPages = ref(0);
 const isLoading = ref(false);
 const progress = ref(0);
 
+const isTranslateCurrentPage = ref(false);
 
 const contentRef = ref<HTMLElement>();
 // Touch handling
@@ -123,15 +130,11 @@ const { handleTouchStart, handleTouchMove, handleTouchEnd } = useSwipeNavigation
 
 onMounted(() => {
   loadBook();
-  void updatePages('onMounted');
-
+  void updatePages();
   // Исправляем высоту viewport для мобильных браузеров
   setViewportHeight();
   window.addEventListener('resize', setViewportHeight);
   window.addEventListener('orientationchange', setViewportHeight);
-
-  // Добавляем обработчик кнопок громкости для навигации
-  window.addEventListener('keydown', handleVolumeKeys);
 });
 
 // Функция для установки правильной высоты viewport
@@ -143,35 +146,12 @@ function setViewportHeight() {
   }
 }
 
-// Обработчик кнопок громкости для навигации по страницам
-function handleVolumeKeys(event: KeyboardEvent) {
-  // Поддержка различных кодов клавиш громкости
-  const volumeDownCodes = ['AudioVolumeDown', 'VolumeDown']; // Уменьшение громкости
-  const volumeUpCodes = ['AudioVolumeUp', 'VolumeUp'];       // Увеличение громкости
-
-  if (volumeDownCodes.includes(event.code) || volumeUpCodes.includes(event.code)) {
-    event.preventDefault(); // Предотвращаем изменение громкости
-
-    if (volumeDownCodes.includes(event.code)) {
-      // Volume Down - предыдущая страница
-      prevPage();
-    } else if (volumeUpCodes.includes(event.code)) {
-      // Volume Up - следующая страница
-      nextPage();
-    }
-  }
-}
-
-
 
 // Очищаем обработчики событий при размонтировании
 onUnmounted(() => {
   window.removeEventListener('resize', setViewportHeight);
   window.removeEventListener('orientationchange', setViewportHeight);
-  window.removeEventListener('keydown', handleVolumeKeys);
 });
-
-
 
 
 const themeClass = computed(() => {
@@ -227,13 +207,10 @@ function savePosition() {
   }
 }
 
-async function updatePages(src: string) {
-  console.log('>>>>>>>>>>>updatePages called', src);
+async function updatePages() {
   if (!book.value) return;
-  console.log('fontSize.value:', fontSize.value);
 
   if (isLoading.value) {
-    console.log('>>>>>>>>>>>updatePages called, but isLoading is true');
     return;
   };
 
@@ -284,9 +261,6 @@ async function updatePages(src: string) {
   pages.value = newPages;
   totalPages.value = newPages.length;
 
-  console.log(`=== FINAL RESULT ===`);
-  console.log(`Created ${newPages.length} pages`);
-
   // Сохраняем пересчитанные страницы в кеш
   savePagesToCache(book.value.id, fontSize.value, newPages);
 
@@ -298,6 +272,16 @@ async function updatePages(src: string) {
   // Скрываем прелоадер
   isLoading.value = false;
 }
+
+
+// тригерим смену контента чтобы браузер сработал на перевод
+watch(isTranslateCurrentPage, async () => {
+  const pageNum = currentPage.value;
+  currentPage.value = -1;
+  await nextTick();
+  currentPage.value = pageNum;
+});
+
 
 function nextPage() {
   scrollToTop('.swipe-container');
@@ -532,5 +516,16 @@ function goBack() {
   opacity: 0.2;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   z-index: 1000;
+}
+
+.translate-current-page-btn {
+  position: fixed;
+  bottom: 50px;
+  left: 10px;
+  opacity: 0.2;
+
+  &.active {
+    color: greenyellow;
+  }
 }
 </style>
