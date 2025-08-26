@@ -1,11 +1,18 @@
 import type { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
+  // Лендинг на корне (без layout)
   {
     path: '/',
+    component: () => import('pages/IndexPage.vue')
+  },
+
+  // Приложение с layout
+  {
+    path: '/app',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') },
+      { path: '', component: () => import('pages/AppPage.vue') },
       { path: 'reader/:id', component: () => import('pages/ReaderPage.vue') }
     ],
   },

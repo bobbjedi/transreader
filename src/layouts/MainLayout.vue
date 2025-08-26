@@ -21,13 +21,23 @@
           Читалка
         </q-item-label>
 
-        <q-item clickable @click="goHome" :active="$route.path === '/'">
+        <q-item clickable @click="goHome" :active="$route.path === '/app'">
+          <q-item-section avatar>
+            <q-icon name="library_books" class="notranslate" translate="no" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Мои книги</q-item-label>
+            <q-item-label caption>Загрузка и управление</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item clickable @click="goToLanding">
           <q-item-section avatar>
             <q-icon name="home" class="notranslate" translate="no" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>Главная</q-item-label>
-            <q-item-label caption>Выбор книг</q-item-label>
+            <q-item-label>На главную</q-item-label>
+            <q-item-label caption>О приложении</q-item-label>
           </q-item-section>
         </q-item>
 
@@ -75,9 +85,9 @@ const { loadUITheme, toggleUITheme, isUIThemeDark } = useTheme();
 const leftDrawerOpen = ref(false);
 const recentBooks = ref<BookMetadata[]>([]);
 
-// Показываем хедер только на главной странице
+// Показываем хедер только в приложении, но не на странице чтения
 const showHeader = computed(() => {
-  return !route.path.includes('/reader/');
+  return route.path.startsWith('/app') && !route.path.includes('/reader/');
 });
 
 onMounted(() => {
@@ -97,13 +107,18 @@ function toggleLeftDrawer() {
 }
 
 function goHome() {
+  void router.push('/app');
+  leftDrawerOpen.value = false;
+}
+
+function goToLanding() {
   void router.push('/');
   leftDrawerOpen.value = false;
 }
 
 function openBook(book: BookMetadata) {
   localStorage.setItem('current-book', JSON.stringify(book));
-  void router.push(`/reader/${book.id}`);
+  void router.push(`/app/reader/${book.id}`);
   leftDrawerOpen.value = false;
 }
 </script>

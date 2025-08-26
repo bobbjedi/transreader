@@ -1,355 +1,924 @@
 <template>
-  <q-page class="flex column items-center justify-center q-pa-md">
-    <div class="text-h4 q-mb-lg text-center">
-      📚 Мобильная читалка
+  <div class="landing-page">
+    <!-- Hero секция -->
+    <div class="hero-section">
+      <div class="hero-background"></div>
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-badge" @click="openGithub">
+            <q-icon name="code" size="18px" /> <span class="q-ml-sm">Open Source</span>
+          </div>
+          <h1 class="hero-title">
+            Веб-ридер для чтения книг в оригинале и изучения языков
+          </h1>
+          <div class="hero-features">
+            <div class="hero-feature">
+              <q-icon name="touch_app" size="18px" />
+              <span class="q-ml-sm">Клик по словам</span>
+            </div>
+            <div class="hero-feature">
+              <q-icon name="compare" size="18px" />
+              <span class="q-ml-sm">Построчный диалог перевода</span>
+            </div>
+            <div class="hero-feature">
+              <q-icon name="translate" size="18px" />
+              <span class="q-ml-sm">Перевод через браузер</span>
+            </div>
+            <div class="hero-feature">
+              <q-icon name="offline_bolt" size="18px" />
+              <span class="q-ml-sm">Оффлайн перевод (EN->RU)</span>
+            </div>
+
+            <div class="hero-feature">
+              <q-icon name="compare" size="18px" />
+              <span class="q-ml-sm">Загрузка своих книг FB2, TXT</span>
+            </div>
+          </div>
+
+          <div class="hero-action">
+            <q-btn color="primary" size="lg" unelevated rounded @click="goToApp" class="hero-cta-button" icon="launch">
+              Открыть веб-приложение
+            </q-btn>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="column q-gutter-md" style="max-width: 400px; width: 100%;">
-      <!-- Выбор файла -->
-      <q-card class="q-pa-md">
-        <q-card-section>
-          <div class="text-h6 q-mb-md">Выберите книгу</div>
-          <q-file v-model="selectedFile" label="Выберите файл (FB2, TXT)" accept=".fb2,.txt" filled :loading="isLoading"
-            @update:model-value="handleFileSelect">
-            <template v-slot:prepend>
-              <q-icon name="attach_file" class="notranslate" translate="no" />
-            </template>
-          </q-file>
-        </q-card-section>
-      </q-card>
+    <!-- Способы перевода -->
+    <div class="features-section">
+      <div class="container">
+        <div class="features-grid">
+          <!-- Перевод слов -->
+          <div class="feature-card feature-card--offline">
+            <div class="feature-header">
+              <div class="feature-icon">
+                <q-icon name="touch_app" size="32px" />
+              </div>
+              <div class="feature-badge feature-badge--offline">Офлайн</div>
+            </div>
+            <h3 class="feature-title">Перевод слов</h3>
+            <p class="feature-description">
+              Клик по слову показывает перевод EN->RU из локального словаря
+            </p>
 
-      <!-- Список загруженных книг -->
-      <q-card v-if="books.length > 0" class="q-pa-md">
-        <q-card-section>
-          <div class="text-h6 q-mb-md">Мои книги</div>
-          <q-list separator>
-            <q-item v-for="book in books" :key="book.id" clickable @click="openBook(book)" class="q-py-sm">
-              <q-item-section>
-                <q-item-label class="notranslate" translate="no">{{ book.title }}</q-item-label>
-                <q-item-label caption>
-                  {{ book.pages }} страниц • {{ formatFileSize(book.size) }}
-                </q-item-label>
-              </q-item-section>
-              <q-item-section side>
-                <q-btn flat round dense icon="edit" color="primary" @click.stop="handleRenameBook(book)"
-                  class="q-mr-sm notranslate" translate="no">
-                  <q-tooltip>Переименовать книгу</q-tooltip>
-                </q-btn>
-                <q-btn flat round dense icon="delete" color="negative" @click.stop="handleDeleteBook(book.id)"
-                  class="q-mr-sm notranslate" translate="no">
-                  <q-tooltip>Удалить книгу</q-tooltip>
-                </q-btn>
-                <q-icon name="chevron_right" class="notranslate" translate="no" />
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-card-section>
-      </q-card>
+          </div>
 
+          <!-- Автоперевод страницы -->
+          <div class="feature-card feature-card--online">
+            <div class="feature-header">
+              <div class="feature-icon">
+                <q-icon name="translate" size="32px" />
+              </div>
+              <div class="feature-badge feature-badge--online">Онлайн</div>
+            </div>
+            <h3 class="feature-title">Автоперевод</h3>
+            <p class="feature-description">
+              Автоперевод страницы через функцию браузера "Перевести страницу"
+            </p>
+
+          </div>
+
+          <!-- Построчный перевод -->
+          <div class="feature-card feature-card--hybrid">
+            <div class="feature-header">
+              <div class="feature-icon">
+                <q-icon name="compare" size="32px" />
+              </div>
+              <div class="feature-badge feature-badge--hybrid">Гибридный</div>
+            </div>
+            <h3 class="feature-title">Построчный перевод</h3>
+            <p class="feature-description">
+              Диалог с построчным переводом текущей страницы
+            </p>
+
+          </div>
+        </div>
+      </div>
     </div>
-  </q-page>
+
+    <!-- Дополнительные возможности -->
+    <div class="additional-features">
+      <div class="container">
+
+        <div class="additional-grid">
+          <div class="additional-card">
+            <div class="additional-icon">
+              <q-icon name="smartphone" size="28px" />
+            </div>
+            <h4 class="additional-title">Мобильная оптимизация</h4>
+            <p class="additional-description">Свайпы для навигации, адаптивная верстка</p>
+          </div>
+
+          <div class="additional-card">
+            <div class="additional-icon">
+              <q-icon name="palette" size="28px" />
+            </div>
+            <h4 class="additional-title">Настройки чтения</h4>
+            <p class="additional-description">Размер шрифта, цветовые темы</p>
+          </div>
+
+          <div class="additional-card">
+            <div class="additional-icon">
+              <q-icon name="save" size="28px" />
+            </div>
+            <h4 class="additional-title">Локальное хранение</h4>
+            <p class="additional-description">Данные хранятся в localStorage браузера</p>
+          </div>
+
+          <div class="additional-card">
+            <div class="additional-icon">
+              <q-icon name="description" size="28px" />
+            </div>
+            <h4 class="additional-title">Поддержка форматов</h4>
+            <p class="additional-description">FB2 и TXT файлы, автоматическая пагинация</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="cta-section">
+      <div class="cta-background"></div>
+      <div class="container">
+        <div class="cta-content">
+          <div class="cta-main">
+            <h2 class="cta-title">Готов начать изучение?</h2>
+            <p class="cta-subtitle">
+              Загрузи книгу и попробуй все способы перевода
+            </p>
+
+            <div class="cta-actions">
+              <q-btn color="white" text-color="primary" size="lg" unelevated rounded @click="goToApp"
+                class="cta-button-primary" icon="launch">
+                Открыть веб-приложение
+              </q-btn>
+            </div>
+
+            <div class="cta-features">
+              <div class="cta-feature">
+                <q-icon name="cloud_off" size="20px" />
+                <span>Работает офлайн</span>
+              </div>
+              <div class="cta-feature">
+                <q-icon name="smartphone" size="20px" />
+                <span>Мобильная версия</span>
+              </div>
+              <div class="cta-feature">
+                <q-icon name="money_off" size="20px" />
+                <span>100% бесплатно</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Футер -->
+    <div class="footer-section">
+      <div class="container text-center">
+        <div class="text-body2 text-grey-6">
+          Открытый проект для изучения языков через чтение
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useQuasar } from 'quasar';
-import type { Book } from 'src/composables/useBookManager';
-import { useBookManager, type BookMetadata } from 'src/composables/useBookManager';
 
 const router = useRouter();
-const $q = useQuasar();
-const { getAllBooksMetadata, deleteBookById, addBook, saveBooksMetadata } = useBookManager();
 
-const selectedFile = ref<File | null>(null);
-const isLoading = ref(false);
-const books = ref<BookMetadata[]>([]);
-const fontSize = ref(16);
-const theme = ref('light');
-
-onMounted(() => {
-  loadSettings();
-  loadBooks();
-});
-
-function loadSettings() {
-  const savedFontSize = localStorage.getItem('reader-font-size');
-  const savedTheme = localStorage.getItem('reader-theme');
-
-  if (savedFontSize) fontSize.value = parseInt(savedFontSize);
-  if (savedTheme) theme.value = savedTheme;
+function goToApp() {
+  void router.push('/app');
 }
-
-function saveSettings() {
-  localStorage.setItem('reader-font-size', fontSize.value.toString());
-  localStorage.setItem('reader-theme', theme.value);
-}
-
-function loadBooks() {
-  books.value = getAllBooksMetadata();
-}
-
-async function handleFileSelect(file: File | null) {
-  if (!file) return;
-
-  isLoading.value = true;
-
-  try {
-    const content = await readFile(file);
-    const parsedBook = parseBook(file, content);
-
-    addBook(parsedBook);
-    books.value = getAllBooksMetadata();
-
-    $q.notify({
-      type: 'positive',
-      message: `Книга "${parsedBook.title}" успешно загружена`,
-      position: 'top'
-    });
-
-    // Автоматически открываем книгу
-    openBook(parsedBook);
-
-  } catch (error) {
-    console.error('Error processing file:', error);
-    $q.notify({
-      type: 'negative',
-      message: 'Ошибка при обработке файла',
-      position: 'top'
-    });
-  } finally {
-    isLoading.value = false;
-    selectedFile.value = null;
-  }
-}
-
-function readFile(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => resolve(e.target?.result as string);
-    reader.onerror = reject;
-    reader.readAsText(file, 'utf-8');
-  });
-}
-
-function parseBook(file: File, content: string): Book {
-  const id = Date.now().toString();
-  let title = file.name.replace(/\.(fb2|txt)$/i, '');
-  let cleanContent = content;
-
-  // Парсинг FB2
-  if (file.name.toLowerCase().endsWith('.fb2')) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(content, 'text/xml');
-
-    // Проверяем на ошибки парсинга
-    const parseError = doc.querySelector('parsererror');
-    if (parseError) {
-      console.warn('FB2 parsing error, treating as plain text');
-      cleanContent = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
-    } else {
-      // Отладочная информация о структуре документа
-      console.log('FB2 Document structure:');
-      console.log('Root element:', doc.documentElement.tagName);
-      console.log('Child elements:', Array.from(doc.documentElement.children).map(el => el.tagName));
-
-      // Извлекаем заголовок
-      const titleElement = doc.querySelector('book-title') ||
-        doc.querySelector('title-info book-title') ||
-        doc.querySelector('title');
-      if (titleElement) {
-        title = titleElement.textContent?.trim() || title;
-      }
-
-      // Извлекаем текст из различных возможных структур FB2
-      let paragraphs: Element[] = [];
-
-      // Пробуем различные селекторы для извлечения текста
-      const selectors = [
-        'body p',
-        'section p',
-        'body section p',
-        'FictionBook body section p',
-        'text p',
-        'p',
-        'section',
-        'body section',
-        'text section',
-        'FictionBook section'
-      ];
-
-      for (const selector of selectors) {
-        paragraphs = Array.from(doc.querySelectorAll(selector));
-        if (paragraphs.length > 0) {
-          console.log(`Found ${paragraphs.length} elements with selector: ${selector}`);
-          break;
-        }
-      }
-
-      if (paragraphs.length > 0) {
-        cleanContent = paragraphs
-          .map(el => el.textContent?.trim())
-          .filter(text => text && text.length > 3) // Минимум 3 символа
-          .join('\n\n');
-      } else {
-        // Если не нашли ничего, попробуем извлечь весь текст
-        console.log('No structured elements found, trying to extract all text');
-
-        // Пробуем разные корневые элементы
-        const rootCandidates = [
-          doc.querySelector('body'),
-          doc.querySelector('FictionBook'),
-          doc.querySelector('text'),
-          doc.documentElement
-        ];
-
-        for (const root of rootCandidates) {
-          if (root) {
-            const allText = root.textContent || '';
-            if (allText.trim().length > 100) { // Минимум 100 символов
-              cleanContent = allText
-                .replace(/\s+/g, ' ') // Заменяем множественные пробелы
-                .replace(/(.{100})/g, '$1\n\n') // Разбиваем на абзацы каждые 100 символов
-                .trim();
-              console.log(`Extracted text from root element, length: ${cleanContent.length}`);
-              break;
-            }
-          }
-        }
-      }
-
-      // Если все еще пусто, попробуем парсить как обычный XML/HTML
-      if (!cleanContent || cleanContent.length < 50) {
-        console.log('Fallback: parsing as plain XML');
-        cleanContent = content
-          .replace(/<[^>]*>/g, ' ') // Удаляем все теги
-          .replace(/\s+/g, ' ') // Заменяем множественные пробелы
-          .trim();
-      }
-    }
-
-    console.log(`FB2 parsed: title="${title}", content length=${cleanContent.length}`);
-  }
-
-  // Разбиваем на страницы (примерно 1000 символов на страницу)
-  const wordsPerPage = 250;
-  const words = cleanContent.split(/\s+/);
-  const pages = Math.ceil(words.length / wordsPerPage);
-
-  return {
-    id,
-    title,
-    content: cleanContent,
-    pages,
-    size: file.size,
-    fileName: file.name,
-    addedAt: Date.now()
-  };
-}
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return bytes + ' B';
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-}
-
-function openBook(book: BookMetadata) {
-  saveSettings();
-  localStorage.setItem('current-book', JSON.stringify(book));
-  localStorage.setItem('reader-settings', JSON.stringify({
-    fontSize: fontSize.value,
-    theme: theme.value
-  }));
-  void router.push(`/reader/${book.id}`);
-}
-
-async function handleDeleteBook(bookId: string) {
-  const success = await deleteBookById(bookId);
-  if (success) {
-    // Обновляем список книг после удаления
-    books.value = getAllBooksMetadata();
-  }
-}
-
-async function handleRenameBook(book: BookMetadata) {
-  const newTitle = await new Promise<string | undefined>((resolve) => {
-    $q.dialog({
-      title: 'Переименовать книгу',
-      message: 'Введите новое название:',
-      prompt: {
-        model: book.title,
-        type: 'text',
-        isValid: (val: string) => val.length > 0 && val.length <= 100
-      },
-      cancel: true,
-      persistent: true,
-      ok: {
-        label: 'Сохранить',
-        color: 'primary'
-      }
-    }).onOk((value: string) => {
-      resolve(value);
-    }).onCancel(() => {
-      resolve(undefined);
-    });
-  });
-
-  if (newTitle && newTitle.trim() && newTitle !== book.title) {
-    try {
-      // Получаем все метаданные
-      const allMetadata = getAllBooksMetadata();
-      const bookIndex = allMetadata.findIndex(b => b.id === book.id);
-
-      if (bookIndex !== -1) {
-        // Обновляем название
-        allMetadata[bookIndex] = {
-          ...allMetadata[bookIndex],
-          title: newTitle.trim()
-        } as BookMetadata;
-
-        // Сохраняем обновленные метаданные
-        saveBooksMetadata(allMetadata);
-
-        // Обновляем список книг
-        books.value = getAllBooksMetadata();
-
-        $q.notify({
-          type: 'positive',
-          message: `Книга переименована в "${newTitle.trim()}"`,
-          position: 'top'
-        });
-      }
-    } catch (error) {
-      console.error('Ошибка при переименовании книги:', error);
-      $q.notify({
-        type: 'negative',
-        message: 'Ошибка при переименовании книги',
-        position: 'top'
-      });
-    }
-  }
+function openGithub() {
+  window.open('https://github.com/bobbjedi/transreader', '_blank');
 }
 </script>
 
 <style scoped>
-/* Улучшаем видимость кнопок переключения темы */
-.q-btn-toggle .q-btn {
-  border: 1px solid rgba(0, 0, 0, 0.2) !important;
-  background: rgba(255, 255, 255, 0.8) !important;
-  color: #333 !important;
+.landing-page {
+  min-height: 100vh;
+  background: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.q-btn-toggle .q-btn--active {
-  background: var(--q-accent) !important;
-  color: white !important;
-  border-color: var(--q-accent) !important;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-.q-btn-toggle .q-btn:hover {
-  background: rgba(255, 255, 255, 0.9) !important;
+/* Hero секция */
+.hero-section {
+  position: relative;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
-.q-btn-toggle .q-btn--active:hover {
-  background: var(--q-accent) !important;
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+  color: white;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  background: #3b82f6;
+  color: white;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  color: #1e293b;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: #475569;
+  margin-bottom: 32px;
+  max-width: 550px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-features {
+  margin: 32px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.hero-feature {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  width: 290px;
+  color: #475569;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 8px 16px;
+  min-width: 280px;
+}
+
+.hero-feature q-icon {
+  color: #3b82f6;
+}
+
+.hero-action {
+  margin-top: 32px;
+}
+
+.hero-cta-button {
+  padding: 16px 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background: #3b82f6;
+  color: white;
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+}
+
+.hero-cta-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(59, 130, 246, 0.4);
+  background: #2563eb;
+}
+
+/* Секция возможностей */
+.features-section {
+  padding: 80px 0;
+  background: white;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #1a1a1a;
+}
+
+.section-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+
+
+.feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  background: white;
+}
+
+
+
+
+
+
+
+.feature-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.feature-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--feature-color);
+  color: white;
+}
+
+.feature-badge {
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.feature-badge--offline {
+  background: rgba(5, 150, 105, 0.1);
+  color: #059669;
+}
+
+.feature-badge--online {
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+}
+
+.feature-badge--hybrid {
+  background: rgba(124, 58, 237, 0.1);
+  color: #7c3aed;
+}
+
+.feature-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #1e293b;
+}
+
+.feature-description {
+  color: #475569;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.feature-pros {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pro-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Дополнительные возможности */
+.additional-features {
+  padding: 80px 0;
+  background: white;
+}
+
+.additional-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.additional-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.additional-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  border-color: #3b82f6;
+}
+
+.additional-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.additional-card:hover::before {
+  opacity: 1;
+}
+
+.additional-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  color: white;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+}
+
+.additional-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #1e293b;
+}
+
+.additional-description {
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Секция примеров */
+.examples-section {
+  padding: 80px 0;
+  background: #f1f5f9;
+}
+
+.examples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.example-card {
+  border-radius: 8px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 100%;
+  background: white;
+  border: 1px solid #e2e8f0;
+}
+
+.example-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* CTA секция */
+.cta-section {
+  position: relative;
+  padding: 120px 0;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  overflow: hidden;
+}
+
+.cta-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+}
+
+.cta-content {
+  position: relative;
+  z-index: 2;
+}
+
+.cta-main {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  color: white;
+}
+
+.cta-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.9) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cta-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.cta-actions {
+  margin-bottom: 40px;
+}
+
+.cta-button-primary {
+  padding: 16px 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background: #6366f1;
+  color: white;
+  border: none;
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+  transition: all 0.3s ease;
+}
+
+.cta-button-primary:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.4);
+  background: #5b21b6;
+}
+
+.cta-features {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.cta-feature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* Футер */
+.footer-section {
+  padding: 40px 0;
+  background: #0f172a;
+  color: #94a3b8;
+}
+
+/* Мобильная адаптивность */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .hero-section {
+    min-height: 90vh;
+    padding: 60px 0;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .hero-stats {
+    gap: 24px;
+    margin-top: 32px;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+  }
+
+  .features-section {
+    padding: 80px 0;
+  }
+
+  .section-header {
+    margin-bottom: 60px;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .section-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .feature-card {
+    padding: 24px;
+  }
+
+  .additional-features {
+    padding: 60px 0;
+  }
+
+  .additional-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .examples-section {
+    padding: 60px 0;
+  }
+
+  .examples-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .cta-section {
+    padding: 80px 0;
+  }
+
+  .cta-title {
+    font-size: 2rem;
+  }
+
+  .cta-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .cta-features {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 12px;
+  }
+
+  .hero-section {
+    min-height: 80vh;
+    padding: 40px 0;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+    margin-bottom: 32px;
+  }
+
+  .hero-stats {
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .stat-number {
+    font-size: 1.5rem;
+    margin-bottom: 0;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+  }
+
+  .section-title {
+    font-size: 1.75rem;
+  }
+
+  .section-subtitle {
+    font-size: 1rem;
+  }
+
+  .feature-card {
+    padding: 20px;
+  }
+
+  .feature-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .feature-title {
+    font-size: 1.25rem;
+  }
+
+  .feature-description {
+    font-size: 0.9rem;
+  }
+
+  .cta-title {
+    font-size: 1.75rem;
+  }
+
+  .cta-subtitle {
+    font-size: 1rem;
+  }
+
+  .cta-button-primary {
+    padding: 14px 28px;
+    font-size: 1rem;
+  }
+
+  .cta-features {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.feature-card,
+.feature-item,
+.upload-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.feature-card:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.feature-card:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+/* Темная тема */
+.body--dark .landing-page {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 100%);
+}
+
+.body--dark .hero-section {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+}
+
+.body--dark .hero-title {
+  color: #f1f5f9;
+}
+
+.body--dark .hero-subtitle {
+  color: #cbd5e1;
+}
+
+.body--dark .hero-feature {
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.body--dark .features-section {
+  background: #1e293b;
+  color: #e0e0e0;
+}
+
+.body--dark .feature-card {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+.body--dark .feature-card:hover {
+  background: #334155;
+}
+
+.body--dark .feature-card .feature-title {
+  color: #f8fafc;
+}
+
+.body--dark .feature-card .feature-description {
+  color: #cbd5e1;
+}
+
+.body--dark .additional-features {
+  background: #1e293b;
+}
+
+.body--dark .examples-section {
+  background: #334155;
+}
+
+.body--dark .example-card {
+  background: #1e293b;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+.body--dark .example-card .text-grey-7 {
+  color: #cbd5e1 !important;
+}
+
+.body--dark .cta-section {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+.body--dark .additional-card {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+.body--dark .additional-card:hover {
+  background: #334155;
+  border-color: #3b82f6;
+}
+
+.body--dark .additional-title {
+  color: #f8fafc;
+}
+
+.body--dark .additional-description {
+  color: #cbd5e1;
 }
 </style>
