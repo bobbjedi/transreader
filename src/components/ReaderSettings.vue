@@ -12,6 +12,11 @@
           </div>
 
           <div class="q-mb-md">
+            <q-item-label class="q-mb-sm">Яркость: {{ brightness }}%</q-item-label>
+            <q-slider v-model="brightness" :min="20" :max="150" :step="5" color="primary" />
+          </div>
+
+          <div class="q-mb-md">
             <q-item-label class="q-mb-sm">Тема</q-item-label>
             <q-btn-toggle v-model="theme" :options="[
               { label: 'Светлая', value: 'light' },
@@ -31,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { fontSize, theme } from 'src/composables/useReaderSettings';
+import { fontSize, theme, brightness } from 'src/composables/useReaderSettings';
 
 interface Props {
   show: boolean;

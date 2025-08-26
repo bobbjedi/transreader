@@ -1,5 +1,5 @@
 <template>
-  <q-page class="reader-page" :class="themeClass">
+  <q-page class="reader-page" :class="themeClass" :style="readerStyle">
     <div v-if="book" class="reader-container" @touchstart="handleTouchStart" @touchmove="handleTouchMove"
       @touchend="handleTouchEnd">
       <!-- Заголовок с навигацией -->
@@ -73,7 +73,7 @@ import ReaderSettings from 'src/components/ReaderSettings.vue';
 import PagesPaginator from 'src/components/PagesPaginator.vue';
 import FullscreenToggle from 'src/components/FullscreenToggle.vue';
 import { wrapContentToWords } from 'src/composables/useTranslate';
-import { fontSize, theme } from 'src/composables/useReaderSettings';
+import { fontSize, theme, brightness } from 'src/composables/useReaderSettings';
 import { useBookManager } from 'src/composables/useBookManager';
 import { scrollToTop } from 'src/boot/utils';
 import { useSwipeNavigation } from 'src/composables/useSwipeNavigation';
@@ -160,6 +160,12 @@ onUnmounted(() => {
 
 const themeClass = computed(() => {
   return `theme-${theme.value}`;
+});
+
+const readerStyle = computed(() => {
+  return {
+    filter: `brightness(${brightness.value}%)`
+  };
 });
 
 const currentPageContent = computed(() => {
