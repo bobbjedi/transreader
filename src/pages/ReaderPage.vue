@@ -24,10 +24,6 @@
         </div>
       </div>
 
-      <!-- Компонент перевода -->
-      <OfflineTranslateDialog :page-text="currentPageContent" :current-page="currentPage" :total-pages="totalPages"
-        @prev-page="prevPage" @next-page="nextPage" />
-
       <OnlineTranslateDialog :page-text="currentPageContent" :current-page="currentPage" :total-pages="totalPages"
         @prev-page="prevPage" @next-page="nextPage" />
 
@@ -66,7 +62,6 @@ import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { useTextPages } from 'src/composables/useTextPages';
 import { usePageCache } from 'src/composables/usePageCache';
-import OfflineTranslateDialog from 'src/components/OfflineTranslateDialog.vue';
 import OnlineTranslateDialog from 'src/components/OnlineTranslateDialog.vue';
 import ReaderSettings from 'src/components/ReaderSettings.vue';
 import PagesPaginator from 'src/components/PagesPaginator.vue';
@@ -75,6 +70,7 @@ import { wrapContentToWords } from 'src/composables/useTranslate';
 import { fontSize, theme } from 'src/composables/useReaderSettings';
 import { useBookManager } from 'src/composables/useBookManager';
 import { scrollToTop } from 'src/boot/utils';
+import { useSwipeNavigation } from 'src/composables/useSwipeNavigation';
 
 const { getBookContent } = useBookManager();
 
@@ -114,9 +110,14 @@ const progress = ref(0);
 
 const contentRef = ref<HTMLElement>();
 // Touch handling
-const touchStartX = ref(0);
-const touchStartY = ref(0);
-const isSwiping = ref(false);
+// Используем composable для свайпов
+const { handleTouchStart, handleTouchMove, handleTouchEnd } = useSwipeNavigation(
+  prevPage,
+  nextPage,
+  {
+    disabled: () => showSettings.value
+  }
+);
 
 onMounted(() => {
   loadBook();
@@ -297,7 +298,7 @@ async function updatePages(src: string) {
 }
 
 function nextPage() {
-  scrollToTop('.translate-card');
+  scrollToTop('.swipe-container');
   if (currentPage.value < totalPages.value - 1) {
     currentPage.value++;
     savePosition();
@@ -305,7 +306,7 @@ function nextPage() {
 }
 
 function prevPage() {
-  scrollToTop('.translate-card');
+  scrollToTop('.swipe-container');
   if (currentPage.value > 0) {
     currentPage.value--;
     savePosition();
@@ -315,46 +316,6 @@ function prevPage() {
 function goBack() {
   savePosition();
   void router.push('/');
-}
-
-
-
-// Touch handlers
-function handleTouchStart(event: TouchEvent) {
-  if (showSettings.value || !event.touches[0]) return;
-
-  touchStartX.value = event.touches[0].clientX;
-  touchStartY.value = event.touches[0].clientY;
-  isSwiping.value = false;
-}
-
-function handleTouchMove(event: TouchEvent) {
-  if (showSettings.value || !event.touches[0]) return;
-
-  const deltaX = Math.abs(event.touches[0].clientX - touchStartX.value);
-  const deltaY = Math.abs(event.touches[0].clientY - touchStartY.value);
-
-  if (deltaX > 10 || deltaY > 10) {
-    isSwiping.value = true;
-  }
-}
-
-function handleTouchEnd(event: TouchEvent) {
-  if (showSettings.value || !isSwiping.value || !event.changedTouches[0]) return;
-
-  const deltaX = event.changedTouches[0].clientX - touchStartX.value;
-  const deltaY = Math.abs(event.changedTouches[0].clientY - touchStartY.value);
-
-  // Проверяем, что это горизонтальный свайп
-  if (Math.abs(deltaX) > 50 && deltaY < 100) {
-    if (deltaX > 0) {
-      prevPage();
-    } else {
-      nextPage();
-    }
-  }
-
-  isSwiping.value = false;
 }
 </script>
 
