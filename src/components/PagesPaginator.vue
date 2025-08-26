@@ -2,13 +2,13 @@
     <!-- Индикатор страницы -->
     <div class="page-indicator">
         <div class="page-nav-left" @click="onPrevPage">
-            <q-icon name="chevron_left" class="nav-icon" />
+            <q-icon name="chevron_left" class="nav-icon notranslate" translate="no" />
         </div>
         <div class="page-info">
             {{ currentPage + 1 }} / {{ totalPages }}
         </div>
         <div class="page-nav-right" @click="onNextPage">
-            <q-icon name="chevron_right" class="nav-icon" />
+            <q-icon name="chevron_right" class="nav-icon notranslate" translate="no" />
         </div>
     </div>
 </template>

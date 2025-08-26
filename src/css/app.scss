@@ -49,11 +49,11 @@
     line-height: 1.6;
     white-space: pre-wrap;
     word-break: break-word;
-    font-size: 14px;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-left-color: var(--q-primary);
   }
   
   .text-translation {
+    opacity: 0.9;
     border-left-color: var(--q-secondary);
   }

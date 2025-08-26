@@ -12,7 +12,7 @@
           <q-file v-model="selectedFile" label="Выберите файл (FB2, TXT)" accept=".fb2,.txt" filled :loading="isLoading"
             @update:model-value="handleFileSelect">
             <template v-slot:prepend>
-              <q-icon name="attach_file" />
+              <q-icon name="attach_file" class="notranslate" translate="no" />
             </template>
           </q-file>
         </q-card-section>
@@ -32,14 +32,14 @@
               </q-item-section>
               <q-item-section side>
                 <q-btn flat round dense icon="edit" color="primary" @click.stop="handleRenameBook(book)"
-                  class="q-mr-sm">
+                  class="q-mr-sm notranslate" translate="no">
                   <q-tooltip>Переименовать книгу</q-tooltip>
                 </q-btn>
                 <q-btn flat round dense icon="delete" color="negative" @click.stop="handleDeleteBook(book.id)"
-                  class="q-mr-sm">
+                  class="q-mr-sm notranslate" translate="no">
                   <q-tooltip>Удалить книгу</q-tooltip>
                 </q-btn>
-                <q-icon name="chevron_right" />
+                <q-icon name="chevron_right" class="notranslate" translate="no" />
               </q-item-section>
             </q-item>
           </q-list>

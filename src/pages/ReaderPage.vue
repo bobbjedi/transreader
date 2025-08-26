@@ -4,9 +4,16 @@
       @touchend="handleTouchEnd">
       <!-- Заголовок с навигацией -->
       <div class="reader-header">
-        <q-btn flat round dense icon="arrow_back" @click="goBack" class="header-btn" />
+        <q-btn flat round dense icon="arrow_back" @click="goBack" class="header-btn notranslate" translate="no" />
         <div class="book-title notranslate" translate="no">{{ book.title }}</div>
-        <q-btn flat round dense icon="settings" @click="showSettings = !showSettings" class="header-btn" />
+        <div class="header-actions">
+          <q-btn flat round dense :icon="isFullscreen ? 'fullscreen_exit' : 'fullscreen'" @click="toggleFullscreen"
+            class="header-btn notranslate" translate="no">
+            <q-tooltip>{{ isFullscreen ? 'Выйти из полноэкранного режима' : 'Полноэкранный режим' }}</q-tooltip>
+          </q-btn>
+          <q-btn flat round dense icon="settings" @click="showSettings = !showSettings" class="header-btn notranslate"
+            translate="no" />
+        </div>
       </div>
 
       <!-- Контент страницы -->
@@ -100,6 +107,7 @@ const { savePagesToCache, loadPagesFromCache, clearBookCache } = usePageCache();
 const book = ref<Book | null>(null);
 
 const showSettings = ref(false);
+const isFullscreen = ref(false);
 const currentPage = ref(0);
 const pages = ref<string[]>([]);
 const totalPages = ref(0);
@@ -124,6 +132,12 @@ onMounted(() => {
 
   // Добавляем обработчик кнопок громкости для навигации
   window.addEventListener('keydown', handleVolumeKeys);
+
+  // Добавляем обработчики полноэкранного режима
+  document.addEventListener('fullscreenchange', handleFullscreenChange);
+  document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+  document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+  document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 });
 
 // Функция для установки правильной высоты viewport
@@ -154,11 +168,22 @@ function handleVolumeKeys(event: KeyboardEvent) {
   }
 }
 
+// Обработчик изменения полноэкранного режима
+function handleFullscreenChange() {
+  isFullscreen.value = !!document.fullscreenElement;
+}
+
 // Очищаем обработчики событий при размонтировании
 onUnmounted(() => {
   window.removeEventListener('resize', setViewportHeight);
   window.removeEventListener('orientationchange', setViewportHeight);
   window.removeEventListener('keydown', handleVolumeKeys);
+
+  // Удаляем обработчики полноэкранного режима
+  document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+  document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+  document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
 });
 
 
@@ -310,6 +335,30 @@ function goBack() {
   void router.push('/');
 }
 
+// Функция переключения полноэкранного режима
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    // Входим в полноэкранный режим
+    document.documentElement.requestFullscreen().then(() => {
+      isFullscreen.value = true;
+    }).catch((err) => {
+      console.error('Ошибка входа в полноэкранный режим:', err);
+      $q.notify({
+        type: 'negative',
+        message: 'Не удалось войти в полноэкранный режим',
+        position: 'top'
+      });
+    });
+  } else {
+    // Выходим из полноэкранного режима
+    document.exitFullscreen().then(() => {
+      isFullscreen.value = false;
+    }).catch((err) => {
+      console.error('Ошибка выхода из полноэкранного режима:', err);
+    });
+  }
+}
+
 // Touch handlers
 function handleTouchStart(event: TouchEvent) {
   if (showSettings.value || !event.touches[0]) return;
@@ -380,10 +429,17 @@ function handleTouchEnd(event: TouchEvent) {
 .reader-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 8px 16px;
   background: rgba(0, 0, 0, 0.05);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   z-index: 100;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .book-title {

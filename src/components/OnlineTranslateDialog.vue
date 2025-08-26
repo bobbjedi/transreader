@@ -19,7 +19,8 @@
                 ? 'Браузерный перевод активен'
                 : 'Для работы включите браузерный перевод'
             }}</span>
-            <q-btn flat round dense icon="close" @click="showDialog = false" class="close-btn" />
+            <q-btn flat round dense icon="close" @click="showDialog = false" class="close-btn notranslate"
+              translate="no" />
           </div>
         </q-card-section>
         <q-separator />
@@ -46,7 +47,7 @@
           @next-page="onNextPage" />
         <q-card-actions class="translate-actions">
           <q-btn label="Закрыть" color="primary" unelevated @click="showDialog = false"
-            class="full-width close-action-btn" />
+            class="full-width close-action-btn notranslate" translate="no" />
         </q-card-actions>
       </q-card>
 

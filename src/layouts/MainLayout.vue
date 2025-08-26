@@ -23,7 +23,7 @@
 
         <q-item clickable @click="goHome" :active="$route.path === '/'">
           <q-item-section avatar>
-            <q-icon name="home" />
+            <q-icon name="home" class="notranslate" translate="no" />
           </q-item-section>
           <q-item-section>
             <q-item-label>Главная</q-item-label>
@@ -39,7 +39,7 @@
 
         <q-item v-for="book in recentBooks" :key="book.id" clickable @click="openBook(book)">
           <q-item-section avatar>
-            <q-icon name="book" />
+            <q-icon name="book" class="notranslate" translate="no" />
           </q-item-section>
           <q-item-section>
             <q-item-label>{{ book.title }}</q-item-label>

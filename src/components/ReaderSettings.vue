@@ -21,7 +21,8 @@
           </div>
 
           <div class="row q-gutter-sm">
-            <q-btn label="Закрыть" @click="$emit('close')" color="primary" flat class="col" />
+            <q-btn label="Закрыть" @click="$emit('close')" color="primary" flat class="col notranslate"
+              translate="no" />
           </div>
         </q-card-section>
       </q-card>
