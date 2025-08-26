@@ -151,7 +151,6 @@ function setViewportHeight() {
   }
 }
 
-
 // Очищаем обработчики событий при размонтировании
 onUnmounted(() => {
   window.removeEventListener('resize', setViewportHeight);
@@ -202,9 +201,6 @@ function loadBook() {
     currentPage.value = parseInt(savedPosition);
   }
 }
-
-
-
 
 function savePosition() {
   if (book.value?.id) {
