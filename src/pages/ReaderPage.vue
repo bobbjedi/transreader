@@ -5,7 +5,7 @@
       <!-- Заголовок с навигацией -->
       <div class="reader-header">
         <q-btn flat round dense icon="arrow_back" @click="goBack" class="header-btn" />
-        <div class="book-title">{{ book.title }}</div>
+        <div class="book-title notranslate" translate="no">{{ book.title }}</div>
         <q-btn flat round dense icon="settings" @click="showSettings = !showSettings" class="header-btn" />
       </div>
 
