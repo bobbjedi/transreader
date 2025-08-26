@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header v-if="showHeader" elevated>
+    <q-header v-if="showHeader" elevated class="app-header">
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
@@ -122,3 +122,13 @@ function openBook(book: BookMetadata) {
   leftDrawerOpen.value = false;
 }
 </script>
+
+<style>
+.app-header .q-toolbar {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+.body--dark .app-header .q-toolbar {
+  background: linear-gradient(135deg, #4c1d95 0%, #6b21a8 100%);
+}
+</style>
