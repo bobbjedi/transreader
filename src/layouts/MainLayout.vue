@@ -31,6 +31,16 @@
           </q-item-section>
         </q-item>
 
+        <q-item clickable @click="goToVocabulary" :active="$route.path === '/app/vocabulary'">
+          <q-item-section avatar>
+            <q-icon name="school" class="notranslate" translate="no" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Словарь</q-item-label>
+            <q-item-label caption>Изучение слов</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-item clickable @click="goToLanding">
           <q-item-section avatar>
             <q-icon name="home" class="notranslate" translate="no" />
@@ -113,6 +123,11 @@ function goHome() {
 
 function goToLanding() {
   void router.push('/');
+  leftDrawerOpen.value = false;
+}
+
+function goToVocabulary() {
+  void router.push('/app/vocabulary');
   leftDrawerOpen.value = false;
 }
 

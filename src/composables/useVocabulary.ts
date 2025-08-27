@@ -72,7 +72,11 @@ const addWord = (word: string): boolean => {
     // Проверяем, есть ли уже такое слово
     const existingWord = vocabulary.value.find(item => item.w === normalizedWord)
     if (existingWord) {
-        return false // Слово уже есть в словаре
+        // Слово уже есть - сбрасываем счетчик на 0 (пользователь его не узнал)
+        existingWord.c = 0
+        stats.value.currentStreak = 0 // Также сбрасываем общую серию
+        saveVocabulary()
+        return false // Слово уже было в словаре, но счетчик сброшен
     }
 
     // Добавляем новое слово
