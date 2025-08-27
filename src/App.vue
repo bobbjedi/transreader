@@ -6,15 +6,23 @@
 import { useQuasar } from 'quasar';
 import { wordListTranslates } from './composables/useTranslate';
 import { useOnlineStatus } from './composables/useIsOnline';
+import { useVocabulary } from './composables/useVocabulary';
 
 const $q = useQuasar();
 
 const { isOnline } = useOnlineStatus();
+const { addWord } = useVocabulary();
 
 document.addEventListener('click', (event) => {
   const target = event.target;
   if (target instanceof Element) {
     if (target.classList.contains('clickable-word')) {
+      // Сохраняем слово в словарь (если его еще нет)
+      const word = target.textContent;
+      if (word) {
+        addWord(word);
+      }
+
       $q.notify({
         html: true,
         message: `
