@@ -22,9 +22,11 @@
             <!-- Варианты ответов -->
             <q-card-section class="q-pt-none">
                 <div class="row q-gutter-sm">
-                    <div v-for="(option, index) in answerOptions" :key="index" class="col-12 col-sm-6">
+                    <div v-for="(option, index) in answerOptions" :key="index" class="col-12 col-sm-6"
+                        :class="{ 'option-animated': showAnimatedOptions }"
+                        :style="{ 'animation-delay': `${index * 150}ms` }">
                         <q-btn :class="getOptionClass(option)" :disable="hasAnswered" size="md" :label="option"
-                            @click="selectAnswer(option)" class="full-width q-py-sm answer-btn text-body2" />
+                            @click.stop="selectAnswer(option)" class="full-width q-py-sm answer-btn text-body2" />
                     </div>
                 </div>
             </q-card-section>
@@ -50,7 +52,12 @@
                     </div>
                 </div>
 
-                <q-btn color="primary" label="Следующее слово" @click="nextWord" class="q-mt-md" />
+                <div class="q-mt-md">
+                    <q-icon name="touch_app" size="sm" class="text-grey-6" />
+                    <div class="text-caption text-grey-6">
+                        Коснитесь карточки для следующего слова
+                    </div>
+                </div>
             </q-card-section>
 
             <!-- Если слово изучено -->
@@ -61,6 +68,9 @@
                     Это слово удалено из словаря для изучения
                 </div>
             </q-card-section>
+
+            <!-- Прозрачный overlay для перехода к следующему слову -->
+            <div v-if="hasAnswered && showOverlay" class="overlay-next" @click="nextWord"></div>
         </q-card>
 
         <!-- Нет слов для изучения -->
@@ -99,6 +109,8 @@ const correctAnswer = ref<string>('');
 const hasAnswered = ref(false);
 const isLastAnswerCorrect = ref(false);
 const selectedAnswer = ref<string>('');
+const showAnimatedOptions = ref(false);
+const showOverlay = ref(false);
 
 // Словарь для случайных неправильных ответов
 const dictionary = rawDict as Record<string, string[]>;
@@ -168,6 +180,13 @@ const loadNewWord = () => {
         answerOptions.value = generateAnswerOptions(word.w);
         hasAnswered.value = false;
         selectedAnswer.value = '';
+        showOverlay.value = false; // Скрываем overlay в начале раунда
+
+        // Запускаем анимацию появления кнопок
+        showAnimatedOptions.value = false;
+        setTimeout(() => {
+            showAnimatedOptions.value = true;
+        }, 100);
     } else {
         currentWord.value = null;
     }
@@ -191,6 +210,11 @@ const selectAnswer = (answer: string) => {
             currentWord.value.c = 0;
         }
     }
+
+    // Показываем overlay через 1 секунду после ответа
+    setTimeout(() => {
+        showOverlay.value = true;
+    }, 1000);
 };
 
 const nextWord = () => {
@@ -244,5 +268,54 @@ onMounted(() => {
     background-color: #424242 !important;
     color: #ffffff !important;
     border: 1px solid #616161;
+}
+
+/* Анимация появления кнопок */
+.option-animated {
+    animation: slideInUp 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Убираем анимацию для уже отвеченных состояний */
+.option-animated .answer-btn:disabled {
+    animation: none;
+}
+
+/* Прозрачный overlay для клика на следующее слово */
+.overlay-next {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: transparent;
+    cursor: pointer;
+    z-index: 10;
+    user-select: none;
+}
+
+.overlay-next:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.body--dark .overlay-next:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.test-card {
+    position: relative;
 }
 </style>
