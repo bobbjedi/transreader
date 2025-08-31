@@ -90,7 +90,6 @@
 import { ref, computed, onMounted } from 'vue';
 import { useVocabulary } from 'src/composables/useVocabulary';
 import { wordListTranslates } from 'src/composables/useTranslate';
-import rawDict from 'src/composables/dictionary_transformed.json';
 
 // Emits
 defineEmits(['goToBooks']);
@@ -100,6 +99,7 @@ const {
     getWordForTest,
     incrementCounter,
     resetCounter,
+    vocabulary
 } = useVocabulary();
 
 // Reactive data
@@ -113,7 +113,6 @@ const showAnimatedOptions = ref(false);
 const showOverlay = ref(false);
 
 // Словарь для случайных неправильных ответов
-const dictionary = rawDict as Record<string, string[]>;
 const allTranslations = ref<string[]>([]);
 
 // Computed
@@ -135,10 +134,11 @@ const getOptionClass = computed(() => (option: string) => {
 
 // Methods
 const loadRandomTranslations = () => {
-    // Собираем все переводы из словаря для случайного выбора
+    // Собираем переводы только из слов в пользовательском словаре
     const translations = new Set<string>();
 
-    Object.values(dictionary).forEach(wordTranslations => {
+    vocabulary.value.forEach(userWord => {
+        const wordTranslations = wordListTranslates(userWord.w);
         wordTranslations.forEach(translation => {
             translations.add(translation);
         });
@@ -176,6 +176,9 @@ const generateAnswerOptions = (word: string): string[] => {
 const loadNewWord = () => {
     const word = getWordForTest();
     if (word) {
+        // Обновляем список переводов из текущего словаря
+        loadRandomTranslations();
+
         showAnimatedOptions.value = false;
         currentWord.value = word;
         answerOptions.value = generateAnswerOptions(word.w);
@@ -183,7 +186,6 @@ const loadNewWord = () => {
         selectedAnswer.value = '';
 
         // Запускаем анимацию появления кнопок
-
         setTimeout(() => {
             showAnimatedOptions.value = true;
         }, 100);
@@ -226,7 +228,6 @@ const nextWord = () => {
 
 // Lifecycle
 onMounted(() => {
-    loadRandomTranslations();
     loadNewWord();
 });
 </script>
