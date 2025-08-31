@@ -176,17 +176,22 @@ const generateAnswerOptions = (word: string): string[] => {
 const loadNewWord = () => {
     const word = getWordForTest();
     if (word) {
+        showAnimatedOptions.value = false;
         currentWord.value = word;
         answerOptions.value = generateAnswerOptions(word.w);
         hasAnswered.value = false;
         selectedAnswer.value = '';
-        showOverlay.value = false; // Скрываем overlay в начале раунда
 
         // Запускаем анимацию появления кнопок
-        showAnimatedOptions.value = false;
+
         setTimeout(() => {
             showAnimatedOptions.value = true;
         }, 100);
+
+        // Убираем overlay через 1 секунду после начала нового раунда
+        setTimeout(() => {
+            showOverlay.value = false;
+        }, 1000);
     } else {
         currentWord.value = null;
     }
@@ -211,10 +216,8 @@ const selectAnswer = (answer: string) => {
         }
     }
 
-    // Показываем overlay через 1 секунду после ответа
-    setTimeout(() => {
-        showOverlay.value = true;
-    }, 1000);
+    // Показываем overlay сразу после ответа
+    showOverlay.value = true;
 };
 
 const nextWord = () => {
